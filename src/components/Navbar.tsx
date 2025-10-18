@@ -46,7 +46,6 @@ export const Navbar = () => {
 
   const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Share Thoughts", href: "/share" },
     { label: "My Week", href: "/week" },
     { label: "How It Works", href: "/how-it-works" },
   ];
@@ -78,16 +77,20 @@ export const Navbar = () => {
                 key={link.href}
                 to={link.href}
                 className={`text-sm font-medium transition-colors relative group ${
-                  location.pathname === link.href
-                    ? "text-white"
-                    : "text-white/70 hover:text-white"
+                  location.pathname === "/week"
+                    ? location.pathname === link.href
+                      ? "text-white"
+                      : "text-white/70 hover:text-white"
+                    : location.pathname === link.href
+                    ? "text-foreground"
+                    : "text-foreground/80 hover:text-foreground"
                 }`}
               >
                 {link.label}
                 <span
-                  className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all ${
-                    location.pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
+                  className={`absolute bottom-0 left-0 h-0.5 transition-all ${
+                    location.pathname === "/week" ? "bg-white" : "bg-primary"
+                  } ${location.pathname === link.href ? "w-full" : "w-0 group-hover:w-full"}`}
                 />
               </Link>
             ))}
@@ -117,9 +120,13 @@ export const Navbar = () => {
                     to={link.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`text-left text-lg font-medium transition-colors ${
-                      location.pathname === link.href
-                        ? "text-white"
-                        : "text-white/70 hover:text-white"
+                      location.pathname === "/week"
+                        ? location.pathname === link.href
+                          ? "text-white"
+                          : "text-white/70 hover:text-white"
+                        : location.pathname === link.href
+                        ? "text-foreground"
+                        : "text-foreground/80 hover:text-foreground"
                     }`}
                   >
                     {link.label}
@@ -128,7 +135,11 @@ export const Navbar = () => {
                 <Link
                   to="/profile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 text-lg font-medium text-white/70 hover:text-white transition-colors"
+                  className={`flex items-center gap-2 text-lg font-medium transition-colors ${
+                    location.pathname === "/week"
+                      ? "text-white/70 hover:text-white"
+                      : "text-foreground/80 hover:text-foreground"
+                  }`}
                 >
                   <User className="w-5 h-5" />
                   Profile

@@ -8,7 +8,6 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import ShareThoughts from "./pages/ShareThoughts";
 import MyWeek from "./pages/MyWeek";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import Profile from "./pages/Profile";
@@ -35,7 +34,6 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout><Index /></Layout>} />
-            <Route path="/share" element={<Layout><ShareThoughts /></Layout>} />
             <Route path="/week" element={<Layout><MyWeek /></Layout>} />
             <Route path="/how-it-works" element={<Layout><HowItWorksPage /></Layout>} />
             <Route path="/profile" element={<Layout><Profile /></Layout>} />

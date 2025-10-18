@@ -1,9 +1,50 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Send } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import heroBackground from "@/assets/hero-background.jpg";
 
 export const Hero = () => {
-  const scrollToExercises = () => {
-    document.getElementById('share')?.scrollIntoView({ behavior: 'smooth' });
+  const [thought, setThought] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!thought.trim() || !user) return;
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("thoughts")
+        .insert({
+          user_id: user.id,
+          content: thought.trim(),
+          sentiment: "neutral",
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Thought saved",
+        description: "Your thought has been captured for this week's analysis.",
+      });
+      setThought("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -36,23 +77,26 @@ export const Hero = () => {
           Your weekly mental health companion
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button 
-            size="lg" 
-            className="text-lg px-8 py-6 rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow"
-            onClick={scrollToExercises}
-          >
-            Drop a Thought
-          </Button>
-          <Button 
-            size="lg" 
-            variant="outline" 
-            className="text-lg px-8 py-6 rounded-full border-2"
-            onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            How It Works
-          </Button>
-        </div>
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+          <div className="flex gap-3 items-center bg-card/80 backdrop-blur-sm border-2 border-border rounded-full p-2 shadow-glow">
+            <Input
+              type="text"
+              placeholder="What's on your mind?"
+              value={thought}
+              onChange={(e) => setThought(e.target.value)}
+              disabled={isSubmitting}
+              className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-lg px-4"
+            />
+            <Button
+              type="submit"
+              size="lg"
+              disabled={!thought.trim() || isSubmitting}
+              className="rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all"
+            >
+              <Send className="w-5 h-5" />
+            </Button>
+          </div>
+        </form>
       </div>
     </section>
   );
