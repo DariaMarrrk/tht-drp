@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sparkles, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import themeSpace from "@/assets/theme-space.jpg";
 import themeForest from "@/assets/theme-forest.jpg";
 import themeOcean from "@/assets/theme-ocean.jpg";
@@ -49,6 +51,14 @@ export const ThoughtsConstellation = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [imageryTheme, setImageryTheme] = useState("space");
   const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleGetSuggestions = () => {
+    toast({
+      title: "Weekend Suggestions Coming Soon!",
+      description: "This demo feature will analyze your week and suggest personalized activities.",
+    });
+  };
 
   useEffect(() => {
     if (user) {
@@ -118,7 +128,9 @@ export const ThoughtsConstellation = () => {
       };
 
       // Transform thoughts with improved clustering
-      const transformedThoughts: Thought[] = thoughtsWithKeywords.map((thought, index) => {
+      const positionedThoughts: Thought[] = [];
+      
+      thoughtsWithKeywords.forEach((thought, index) => {
         const contentLength = thought.content.length;
         const passionLevel = Math.min(contentLength, 200) + (thought.content.match(/[!?]/g) || []).length * 20;
         const size = Math.min(Math.max(passionLevel / 5, 40), 120);
@@ -135,7 +147,7 @@ export const ThoughtsConstellation = () => {
             if (similarity > maxSimilarity && similarity > 0.15) {
               maxSimilarity = similarity;
               // Get position of similar thought (if already positioned)
-              const existingThought = transformedThoughts[otherIndex];
+              const existingThought = positionedThoughts[otherIndex];
               if (existingThought) {
                 // Position near similar thought
                 const angle = Math.random() * Math.PI * 2;
@@ -159,7 +171,7 @@ export const ThoughtsConstellation = () => {
           };
         }
         
-        return {
+        positionedThoughts.push({
           id: thought.id,
           content: thought.content,
           sentiment: thought.sentiment,
@@ -167,10 +179,11 @@ export const ThoughtsConstellation = () => {
           x: sentimentPos.baseX + positionOffset.x,
           y: sentimentPos.baseY + positionOffset.y,
           size,
-        };
+        });
       });
 
-      setThoughts(transformedThoughts);
+      setThoughts(positionedThoughts);
+
     } catch (error) {
       console.error("Error loading thoughts:", error);
       setThoughts(mockThoughts);
@@ -400,6 +413,17 @@ export const ThoughtsConstellation = () => {
             </div>
           </div>
         </Card>
+
+        <div className="flex justify-center mt-8">
+          <Button
+            onClick={handleGetSuggestions}
+            size="lg"
+            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow"
+          >
+            <Calendar className="w-5 h-5 mr-2" />
+            Get Weekend Suggestions
+          </Button>
+        </div>
 
         <p className="text-center mt-8 text-white/50 text-sm">
           Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
