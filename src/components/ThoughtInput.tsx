@@ -19,12 +19,23 @@ export const ThoughtInput = () => {
 
     setIsSubmitting(true);
     try {
+      // Analyze sentiment using AI
+      const { data: sentimentData, error: sentimentError } = await supabase.functions.invoke(
+        'analyze-sentiment',
+        {
+          body: { content: thought.trim() }
+        }
+      );
+
+      const sentiment = sentimentError ? 'neutral' : (sentimentData?.sentiment || 'neutral');
+
+      // Save thought with analyzed sentiment
       const { error } = await supabase
         .from("thoughts")
         .insert({
           user_id: user.id,
           content: thought.trim(),
-          sentiment: "neutral", // Default sentiment, could be analyzed later
+          sentiment: sentiment,
         });
 
       if (error) throw error;

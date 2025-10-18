@@ -1,1 +1,7 @@
 project_id = "tyakwdphlcbteyuhsftl"
+
+[functions.analyze-sentiment]
+verify_jwt = false
+
+[functions.reanalyze-thoughts]
+verify_jwt = false

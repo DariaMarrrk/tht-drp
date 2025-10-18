@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Calendar } from "lucide-react";
+import { Sparkles, Calendar, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -58,6 +58,36 @@ export const ThoughtsConstellation = () => {
       title: "Weekend Suggestions Coming Soon!",
       description: "This demo feature will analyze your week and suggest personalized activities.",
     });
+  };
+
+  const handleReanalyzThoughts = async () => {
+    try {
+      toast({
+        title: "Re-analyzing thoughts...",
+        description: "This may take a moment.",
+      });
+
+      const { data, error } = await supabase.functions.invoke('reanalyze-thoughts');
+
+      if (error) throw error;
+
+      toast({
+        title: "Re-analysis complete!",
+        description: `Updated ${data.updated} thoughts. Refresh to see changes.`,
+      });
+
+      // Reload thoughts after re-analysis
+      setTimeout(() => {
+        loadThoughts();
+      }, 1000);
+
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to re-analyze thoughts",
+        variant: "destructive",
+      });
+    }
   };
 
   useEffect(() => {
@@ -414,7 +444,16 @@ export const ThoughtsConstellation = () => {
           </div>
         </Card>
 
-        <div className="flex justify-center mt-8">
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
+          <Button
+            onClick={handleReanalyzThoughts}
+            size="lg"
+            variant="outline"
+            className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 hover:bg-primary/10"
+          >
+            <RefreshCw className="w-5 h-5 mr-2" />
+            Re-analyze All Thoughts
+          </Button>
           <Button
             onClick={handleGetSuggestions}
             size="lg"
