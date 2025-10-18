@@ -3,6 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import themeSpace from "@/assets/theme-space.jpg";
+import themeForest from "@/assets/theme-forest.jpg";
+import themeOcean from "@/assets/theme-ocean.jpg";
+import themeGarden from "@/assets/theme-garden.jpg";
+import themeCampfire from "@/assets/theme-campfire.jpg";
 
 interface Thought {
   id: string;
@@ -42,13 +47,32 @@ export const ThoughtsConstellation = () => {
   const [hoveredThought, setHoveredThought] = useState<string | null>(null);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [imageryTheme, setImageryTheme] = useState("space");
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
       loadThoughts();
+      loadImageryTheme();
     }
   }, [user]);
+
+  const loadImageryTheme = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("imagery_theme")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+      if (data?.imagery_theme) {
+        setImageryTheme(data.imagery_theme);
+      }
+    } catch (error) {
+      console.error("Error loading imagery theme:", error);
+    }
+  };
 
   const loadThoughts = async () => {
     try {
@@ -201,14 +225,36 @@ export const ThoughtsConstellation = () => {
     return connections;
   };
 
+  const getBackgroundImage = () => {
+    switch (imageryTheme) {
+      case "space":
+        return themeSpace;
+      case "forest":
+        return themeForest;
+      case "ocean":
+        return themeOcean;
+      case "garden":
+        return themeGarden;
+      case "campfire":
+        return themeCampfire;
+      default:
+        return themeSpace;
+    }
+  };
+
   return (
     <section 
       className="py-24 px-6 relative overflow-hidden"
       style={{
-        background: `linear-gradient(to bottom, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.05))`,
-        backgroundColor: 'hsl(260 35% 8%)'
+        backgroundImage: `url(${getBackgroundImage()})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
       }}
     >
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      
       {/* Floating background elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />

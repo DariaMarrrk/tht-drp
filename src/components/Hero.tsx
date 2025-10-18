@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,9 +11,33 @@ import heroBackground from "@/assets/hero-background.jpg";
 export const Hero = () => {
   const [thought, setThought] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageryTheme, setImageryTheme] = useState("space");
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      loadImageryTheme();
+    }
+  }, [user]);
+
+  const loadImageryTheme = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("imagery_theme")
+        .eq("id", user?.id)
+        .single();
+
+      if (error) throw error;
+      if (data?.imagery_theme) {
+        setImageryTheme(data.imagery_theme);
+      }
+    } catch (error) {
+      console.error("Error loading imagery theme:", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +71,23 @@ export const Hero = () => {
     }
   };
 
+  const getThemePattern = () => {
+    switch (imageryTheme) {
+      case "space":
+        return "radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, hsl(var(--secondary) / 0.15) 0%, transparent 50%)";
+      case "forest":
+        return "linear-gradient(135deg, hsl(150 40% 30% / 0.1) 0%, transparent 50%), linear-gradient(45deg, hsl(120 30% 20% / 0.1) 0%, transparent 50%)";
+      case "ocean":
+        return "linear-gradient(180deg, hsl(200 60% 50% / 0.1) 0%, hsl(210 70% 60% / 0.05) 100%)";
+      case "garden":
+        return "radial-gradient(ellipse at 30% 40%, hsl(100 40% 60% / 0.1) 0%, transparent 60%), radial-gradient(ellipse at 70% 60%, hsl(340 50% 70% / 0.1) 0%, transparent 60%)";
+      case "campfire":
+        return "radial-gradient(ellipse at 50% 70%, hsl(30 80% 50% / 0.15) 0%, transparent 60%)";
+      default:
+        return "radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.15) 0%, transparent 50%)";
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Image with Overlay */}
@@ -58,7 +99,12 @@ export const Hero = () => {
           backgroundPosition: 'center',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(to bottom, hsl(var(--background) / 0.85) 0%, hsl(var(--background) / 0.7) 50%, hsl(var(--background) / 0.95) 100%), ${getThemePattern()}`
+          }}
+        />
       </div>
 
       {/* Floating Circles */}
