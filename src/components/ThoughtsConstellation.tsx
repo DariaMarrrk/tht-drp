@@ -129,6 +129,16 @@ export const ThoughtsConstellation = () => {
         return;
       }
 
+      // Heuristic fallback sentiment (used only if DB sentiment is missing or neutral)
+      const detectHeuristicSentiment = (text: string): "positive" | "neutral" | "negative" => {
+        const t = text.toLowerCase();
+        const positive = ["amazing","great","won","love","grateful","refreshing","well","good","satisfying","proud","happy"];
+        const negative = ["tired","sad","overwhelmed","stressed","stuck","anxious","angry","bad","frustrated"];
+        if (positive.some(w => t.includes(w))) return "positive";
+        if (negative.some(w => t.includes(w))) return "negative";
+        return "neutral";
+      };
+
       // Helper function to extract keywords from text
       const extractKeywords = (text: string): Set<string> => {
         const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'about', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves']);
@@ -144,11 +154,15 @@ export const ThoughtsConstellation = () => {
       };
 
       // Prepare thoughts with keywords
-      const thoughtsWithKeywords = data.map(thought => ({
-        ...thought,
-        keywords: extractKeywords(thought.content),
-        sentiment: (thought.sentiment as "positive" | "neutral" | "negative") || "neutral",
-      }));
+      const thoughtsWithKeywords = data.map(thought => {
+        const baseSent = (thought.sentiment as "positive" | "neutral" | "negative") || "neutral";
+        const finalSent = baseSent === "neutral" ? detectHeuristicSentiment(thought.content) : baseSent;
+        return {
+          ...thought,
+          keywords: extractKeywords(thought.content),
+          sentiment: finalSent,
+        } as typeof thought & { keywords: Set<string>; sentiment: "positive"|"neutral"|"negative" };
+      });
 
       // Group thoughts by sentiment with clear spatial separation
       const sentimentPositions = {
@@ -162,8 +176,11 @@ export const ThoughtsConstellation = () => {
       
       thoughtsWithKeywords.forEach((thought, index) => {
         const contentLength = thought.content.length;
-        const passionLevel = Math.min(contentLength, 200) + (thought.content.match(/[!?]/g) || []).length * 20;
-        const size = Math.min(Math.max(passionLevel / 5, 40), 120);
+        const exclaimCount = (thought.content.match(/[!?]/g) || []).length;
+        // More expressive sizing with good spread
+        const lenScore = Math.sqrt(Math.min(contentLength, 500)) * 6; // 0..~134
+        const emphScore = Math.min(exclaimCount * 8, 24); // up to +24
+        const size = Math.max(Math.min(24 + lenScore + emphScore, 100), 24);
         
         const sentimentPos = sentimentPositions[thought.sentiment];
         
@@ -225,11 +242,12 @@ export const ThoughtsConstellation = () => {
   const getSentimentColor = (sentiment: "positive" | "neutral" | "negative") => {
     switch (sentiment) {
       case "positive":
-        return "hsl(var(--secondary))"; // Blue
+        return "hsl(var(--secondary))"; // Typically blue/teal in theme
       case "negative":
-        return "hsl(var(--accent))"; // Purple
+        return "hsl(var(--destructive))"; // Red for negative
       case "neutral":
-        return "hsl(var(--primary))"; // Purple-blue
+      default:
+        return "hsl(var(--primary))"; // Brand color
     }
   };
 
@@ -238,7 +256,7 @@ export const ThoughtsConstellation = () => {
       case "positive":
         return "0 0 20px hsl(var(--secondary) / 0.6)";
       case "negative":
-        return "0 0 20px hsl(var(--accent) / 0.6)";
+        return "0 0 20px hsl(var(--destructive) / 0.6)";
       case "neutral":
         return "0 0 15px hsl(var(--primary) / 0.4)";
     }
