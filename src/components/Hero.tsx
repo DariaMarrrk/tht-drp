@@ -57,7 +57,7 @@ export const Hero = () => {
 
       toast({
         title: "Thought saved",
-        description: "Your thought has been captured for this week's analysis.",
+        description: "Thought added to the week board",
       });
       setThought("");
     } catch (error: any) {
@@ -116,11 +116,8 @@ export const Hero = () => {
         <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
           Thought Drop
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-2xl mx-auto">
+        <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto">
           Share your thoughts throughout the week. Get AI-powered weekend suggestions tailored to help you recharge.
-        </p>
-        <p className="text-lg text-muted-foreground/80 mb-12 max-w-xl mx-auto">
-          Your weekly mental health companion
         </p>
         
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
