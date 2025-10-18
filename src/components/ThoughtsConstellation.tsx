@@ -267,9 +267,6 @@ export const ThoughtsConstellation = () => {
               My Thoughts This Week
             </h2>
           </div>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Similar thoughts cluster together, while opposing emotions are kept apart. The size reflects your passion and detail.
-          </p>
         </div>
 
         <Card className="p-8 bg-[hsl(260_35%_10%)]/80 backdrop-blur-sm border-2 border-white/10 animate-fade-in">
@@ -405,7 +402,7 @@ export const ThoughtsConstellation = () => {
         </Card>
 
         <p className="text-center mt-8 text-white/50 text-sm">
-          Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
+          Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts • Size reflects passion and detail
         </p>
       </div>
     </section>
