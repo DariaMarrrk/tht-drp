@@ -402,7 +402,7 @@ export const ThoughtsConstellation = () => {
         </Card>
 
         <p className="text-center mt-8 text-white/50 text-sm">
-          Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts • Size reflects passion and detail
+          Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
       </div>
     </section>
