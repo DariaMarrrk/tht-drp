@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
 import heroBackground from "@/assets/hero-background.jpg";
 
 export const Hero = () => {
@@ -53,10 +52,6 @@ export const Hero = () => {
           >
             How It Works
           </Button>
-        </div>
-
-        <div className="mt-16 animate-bounce">
-          <ArrowDown className="w-6 h-6 mx-auto text-muted-foreground" />
         </div>
       </div>
     </section>
