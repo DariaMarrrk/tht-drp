@@ -12,10 +12,6 @@ export const Footer = () => {
             <span className="font-bold text-xl">Thought Drop</span>
           </div>
           
-          <p className="text-sm text-muted-foreground text-center">
-            Your weekly companion for better mental wellbeing
-          </p>
-          
           <p className="text-sm text-muted-foreground">
             © 2025 Thought Drop. All rights reserved.
           </p>
