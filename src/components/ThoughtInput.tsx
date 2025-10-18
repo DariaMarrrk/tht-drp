@@ -4,20 +4,45 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const ThoughtInput = () => {
   const [thought, setThought] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!thought.trim()) return;
+    if (!thought.trim() || !user) return;
 
-    toast({
-      title: "Thought saved",
-      description: "Your thought has been captured for this week's analysis.",
-    });
-    setThought("");
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("thoughts")
+        .insert({
+          user_id: user.id,
+          content: thought.trim(),
+          sentiment: "neutral", // Default sentiment, could be analyzed later
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Thought saved",
+        description: "Your thought has been captured for this week's analysis.",
+      });
+      setThought("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -51,10 +76,10 @@ export const ThoughtInput = () => {
                 type="submit"
                 size="lg"
                 className="flex-1 rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow"
-                disabled={!thought.trim()}
+                disabled={!thought.trim() || isSubmitting}
               >
                 <Send className="w-5 h-5 mr-2" />
-                Drop Thought
+                {isSubmitting ? "Saving..." : "Drop Thought"}
               </Button>
             </div>
           </form>
