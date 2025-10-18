@@ -244,7 +244,7 @@ export const ThoughtsConstellation = () => {
       case "positive":
         return "hsl(var(--secondary))"; // Typically blue/teal in theme
       case "negative":
-        return "hsl(var(--destructive))"; // Red for negative
+        return "hsl(var(--accent))"; // Softer purple for negative
       case "neutral":
       default:
         return "hsl(var(--primary))"; // Brand color
@@ -256,7 +256,7 @@ export const ThoughtsConstellation = () => {
       case "positive":
         return "0 0 20px hsl(var(--secondary) / 0.6)";
       case "negative":
-        return "0 0 20px hsl(var(--destructive) / 0.6)";
+        return "0 0 20px hsl(var(--accent) / 0.6)";
       case "neutral":
         return "0 0 15px hsl(var(--primary) / 0.4)";
     }
