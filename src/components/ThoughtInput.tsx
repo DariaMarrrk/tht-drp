@@ -21,7 +21,7 @@ export const ThoughtInput = () => {
   };
 
   return (
-    <section id="exercises" className="py-24 px-6">
+    <section id="share" className="py-24 px-6">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-12 animate-fade-in">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">

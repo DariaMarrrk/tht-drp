@@ -4,11 +4,11 @@ import heroBackground from "@/assets/hero-background.jpg";
 
 export const Hero = () => {
   const scrollToExercises = () => {
-    document.getElementById('exercises')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('share')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 z-0"
@@ -49,7 +49,7 @@ export const Hero = () => {
             size="lg" 
             variant="outline" 
             className="text-lg px-8 py-6 rounded-full border-2"
-            onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
           >
             How It Works
           </Button>

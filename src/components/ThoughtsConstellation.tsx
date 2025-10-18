@@ -119,14 +119,13 @@ export const ThoughtsConstellation = () => {
                     r={thought.size / 2}
                     fill={getSentimentColor(thought.sentiment)}
                     opacity={hoveredThought === thought.id ? 1 : 0.8}
-                    className="cursor-pointer transition-all duration-300 animate-scale-in"
+                    className="cursor-pointer animate-scale-in"
                     style={{
                       filter: hoveredThought === thought.id 
                         ? getSentimentGlow(thought.sentiment)
                         : "none",
                       animationDelay: `${idx * 0.05}s`,
-                      transform: hoveredThought === thought.id ? "scale(1.1)" : "scale(1)",
-                      transformOrigin: `${thought.x}px ${thought.y}px`,
+                      transition: "filter 0.2s ease",
                     }}
                     onMouseEnter={() => setHoveredThought(thought.id)}
                     onMouseLeave={() => setHoveredThought(null)}
@@ -165,11 +164,12 @@ export const ThoughtsConstellation = () => {
             {/* Tooltip */}
             {hoveredThought && (
               <div
-                className="absolute bg-card/95 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-4 max-w-xs shadow-glow animate-fade-in"
+                className="absolute bg-card/95 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-4 max-w-xs shadow-glow pointer-events-none z-50"
                 style={{
                   left: `${(mockThoughts.find(t => t.id === hoveredThought)?.x || 0) / 9}%`,
                   top: `${(mockThoughts.find(t => t.id === hoveredThought)?.y || 0) / 6}%`,
-                  transform: "translate(-50%, -120%)",
+                  transform: "translate(-50%, calc(-100% - 20px))",
+                  transition: "none",
                 }}
               >
                 <p className="text-sm text-foreground">
