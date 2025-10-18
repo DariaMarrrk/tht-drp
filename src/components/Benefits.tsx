@@ -4,27 +4,27 @@ import { Brain, Heart, Shield, Zap } from "lucide-react";
 const benefits = [
   {
     icon: Brain,
-    title: "Reduced Stress",
-    description: "Lower cortisol levels and activate your body's relaxation response in minutes",
-    stat: "64% reduction"
+    title: "Self-Awareness",
+    description: "Gain insights into your emotional patterns and mental state throughout the week",
+    stat: "Better understanding"
   },
   {
     icon: Heart,
-    title: "Better Focus",
-    description: "Improve concentration and mental clarity by calming an overactive mind",
-    stat: "2x improvement"
+    title: "Personalized Care",
+    description: "Receive weekend suggestions tailored to what you actually need, not generic advice",
+    stat: "Just for you"
   },
   {
     icon: Shield,
-    title: "Lower Anxiety",
-    description: "Regulate your nervous system and reduce feelings of worry and tension",
-    stat: "58% decrease"
+    title: "Prevent Burnout",
+    description: "Catch stress patterns early and recharge intentionally before exhaustion hits",
+    stat: "Stay balanced"
   },
   {
     icon: Zap,
-    title: "More Energy",
-    description: "Increase oxygen flow and boost natural energy without stimulants",
-    stat: "40% increase"
+    title: "Better Weekends",
+    description: "Make the most of your time off with activities that truly restore your energy",
+    stat: "Maximize recovery"
   }
 ];
 
@@ -34,10 +34,10 @@ export const Benefits = () => {
       <div className="container mx-auto">
         <div className="text-center mb-16 animate-fade-in">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            The Science of Breathing
+            Why Thought Drop?
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Controlled breathing activates your parasympathetic nervous system, creating real physiological changes
+            Your thoughts hold the key to understanding what you need. Let AI help you decode them.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export const Benefits = () => {
 
         <div className="mt-16 text-center">
           <p className="text-sm text-muted-foreground">
-            Based on research from Harvard Medical School, Mayo Clinic, and peer-reviewed studies
+            Powered by AI to understand your unique patterns and needs
           </p>
         </div>
       </div>
