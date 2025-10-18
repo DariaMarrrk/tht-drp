@@ -79,13 +79,13 @@ export const Navbar = () => {
                 to={link.href}
                 className={`text-sm font-medium transition-colors relative group ${
                   location.pathname === link.href
-                    ? "text-foreground"
-                    : "text-foreground/80 hover:text-foreground"
+                    ? "text-white"
+                    : "text-white/70 hover:text-white"
                 }`}
               >
                 {link.label}
                 <span
-                  className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all ${
+                  className={`absolute bottom-0 left-0 h-0.5 bg-white transition-all ${
                     location.pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
                   }`}
                 />
@@ -118,8 +118,8 @@ export const Navbar = () => {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`text-left text-lg font-medium transition-colors ${
                       location.pathname === link.href
-                        ? "text-foreground"
-                        : "text-foreground/80 hover:text-foreground"
+                        ? "text-white"
+                        : "text-white/70 hover:text-white"
                     }`}
                   >
                     {link.label}
@@ -128,7 +128,7 @@ export const Navbar = () => {
                 <Link
                   to="/profile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 text-lg font-medium text-foreground/80 hover:text-foreground transition-colors"
+                  className="flex items-center gap-2 text-lg font-medium text-white/70 hover:text-white transition-colors"
                 >
                   <User className="w-5 h-5" />
                   Profile
