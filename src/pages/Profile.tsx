@@ -42,11 +42,12 @@ const Profile = () => {
 
       if (error) throw error;
 
-      setUsername(data?.username || "");
-      setAvatarUrl(data?.avatar_url || "");
+      const profile = data as any;
+      setUsername(profile?.username || "");
+      setAvatarUrl(profile?.avatar_url || "");
       
-      if (data?.theme) {
-        const savedTheme = themes.find(t => t.name === data.theme);
+      if (profile?.theme) {
+        const savedTheme = themes.find(t => t.name === profile.theme);
         if (savedTheme) setSelectedTheme(savedTheme);
       }
     } catch (error: any) {
@@ -75,7 +76,7 @@ const Profile = () => {
 
       const { error: updateError } = await supabase
         .from("profiles")
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: publicUrl } as any)
         .eq("id", user.id);
 
       if (updateError) throw updateError;
@@ -102,7 +103,7 @@ const Profile = () => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ theme: theme.name })
+        .update({ theme: theme.name } as any)
         .eq("id", user.id);
 
       if (error) throw error;
