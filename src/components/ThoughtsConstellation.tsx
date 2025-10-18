@@ -59,29 +59,94 @@ export const ThoughtsConstellation = () => {
 
       if (error) throw error;
 
-      // Transform database thoughts into constellation format
-      const transformedThoughts: Thought[] = (data || []).map((thought, index) => {
+      if (!data || data.length === 0) {
+        setThoughts(mockThoughts);
+        setIsLoading(false);
+        return;
+      }
+
+      // Helper function to extract keywords from text
+      const extractKeywords = (text: string): Set<string> => {
+        const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'about', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves']);
+        const words = text.toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
+        return new Set(words.filter(w => !stopWords.has(w)));
+      };
+
+      // Calculate similarity between two thoughts
+      const calculateSimilarity = (keywords1: Set<string>, keywords2: Set<string>): number => {
+        const intersection = new Set([...keywords1].filter(x => keywords2.has(x)));
+        const union = new Set([...keywords1, ...keywords2]);
+        return union.size > 0 ? intersection.size / union.size : 0;
+      };
+
+      // Prepare thoughts with keywords
+      const thoughtsWithKeywords = data.map(thought => ({
+        ...thought,
+        keywords: extractKeywords(thought.content),
+        sentiment: (thought.sentiment as "positive" | "neutral" | "negative") || "neutral",
+      }));
+
+      // Group thoughts by sentiment with clear spatial separation
+      const sentimentPositions = {
+        positive: { baseX: 200, baseY: 200, maxRadius: 150 },
+        neutral: { baseX: 450, baseY: 300, maxRadius: 120 },
+        negative: { baseX: 700, baseY: 200, maxRadius: 150 },
+      };
+
+      // Transform thoughts with improved clustering
+      const transformedThoughts: Thought[] = thoughtsWithKeywords.map((thought, index) => {
         const contentLength = thought.content.length;
-        const size = Math.min(Math.max(contentLength / 5, 40), 120);
+        const passionLevel = Math.min(contentLength, 200) + (thought.content.match(/[!?]/g) || []).length * 20;
+        const size = Math.min(Math.max(passionLevel / 5, 40), 120);
         
-        // Position thoughts in clusters based on sentiment
-        const sentiment = (thought.sentiment as "positive" | "neutral" | "negative") || "neutral";
-        const baseX = sentiment === "positive" ? 25 : sentiment === "negative" ? 75 : 50;
-        const baseY = 50;
-        const scatter = 20;
+        const sentimentPos = sentimentPositions[thought.sentiment];
+        
+        // Find similar thoughts to cluster with
+        let positionOffset = { x: 0, y: 0 };
+        let maxSimilarity = 0;
+        
+        thoughtsWithKeywords.slice(0, index).forEach((otherThought, otherIndex) => {
+          if (otherThought.sentiment === thought.sentiment) {
+            const similarity = calculateSimilarity(thought.keywords, otherThought.keywords);
+            if (similarity > maxSimilarity && similarity > 0.15) {
+              maxSimilarity = similarity;
+              // Get position of similar thought (if already positioned)
+              const existingThought = transformedThoughts[otherIndex];
+              if (existingThought) {
+                // Position near similar thought
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 60 + Math.random() * 40;
+                positionOffset = {
+                  x: existingThought.x + Math.cos(angle) * distance - sentimentPos.baseX,
+                  y: existingThought.y + Math.sin(angle) * distance - sentimentPos.baseY,
+                };
+              }
+            }
+          }
+        });
+        
+        // If no similar thought found, position randomly within sentiment cluster
+        if (maxSimilarity === 0) {
+          const angle = Math.random() * Math.PI * 2;
+          const distance = Math.random() * sentimentPos.maxRadius;
+          positionOffset = {
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance,
+          };
+        }
         
         return {
           id: thought.id,
           content: thought.content,
-          sentiment,
+          sentiment: thought.sentiment,
           created_at: thought.created_at,
-          x: baseX + (Math.random() - 0.5) * scatter,
-          y: baseY + (Math.random() - 0.5) * scatter,
+          x: sentimentPos.baseX + positionOffset.x,
+          y: sentimentPos.baseY + positionOffset.y,
           size,
         };
       });
 
-      setThoughts(transformedThoughts.length > 0 ? transformedThoughts : mockThoughts);
+      setThoughts(transformedThoughts);
     } catch (error) {
       console.error("Error loading thoughts:", error);
       setThoughts(mockThoughts);
@@ -112,6 +177,30 @@ export const ThoughtsConstellation = () => {
     }
   };
 
+  // Generate connections between nearby thoughts with same sentiment
+  const generateConnections = (): [string, string][] => {
+    const connections: [string, string][] = [];
+    const maxDistance = 150; // Maximum distance for connections
+    
+    thoughts.forEach((thought, i) => {
+      thoughts.slice(i + 1).forEach((otherThought) => {
+        // Only connect thoughts with same sentiment
+        if (thought.sentiment === otherThought.sentiment) {
+          const distance = Math.sqrt(
+            Math.pow(thought.x - otherThought.x, 2) + 
+            Math.pow(thought.y - otherThought.y, 2)
+          );
+          
+          if (distance < maxDistance) {
+            connections.push([thought.id, otherThought.id]);
+          }
+        }
+      });
+    });
+    
+    return connections;
+  };
+
   return (
     <section className="py-24 px-6 bg-gradient-to-b from-[hsl(260_40%_12%)] to-[hsl(260_35%_8%)] relative overflow-hidden">
       {/* Floating background elements */}
@@ -127,7 +216,7 @@ export const ThoughtsConstellation = () => {
             </h2>
           </div>
           <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            Each thought is a star in your mental constellation. Similar thoughts cluster together.
+            Similar thoughts cluster together, while opposing emotions are kept apart. The size reflects your passion and detail.
           </p>
         </div>
 
@@ -151,14 +240,14 @@ export const ThoughtsConstellation = () => {
             >
               {/* Connection lines */}
               <g opacity="0.3">
-                {connections.map(([start, end], idx) => {
+                {generateConnections().map(([start, end], idx) => {
                   const startThought = thoughts.find(t => t.id === start);
                   const endThought = thoughts.find(t => t.id === end);
                   if (!startThought || !endThought) return null;
                   
                   return (
                     <line
-                      key={idx}
+                      key={`${start}-${end}`}
                       x1={startThought.x}
                       y1={startThought.y}
                       x2={endThought.x}
@@ -166,7 +255,7 @@ export const ThoughtsConstellation = () => {
                       stroke="white"
                       strokeWidth="1"
                       className="animate-fade-in"
-                      style={{ animationDelay: `${idx * 0.1}s` }}
+                      style={{ animationDelay: `${idx * 0.05}s` }}
                     />
                   );
                 })}
@@ -264,7 +353,7 @@ export const ThoughtsConstellation = () => {
         </Card>
 
         <p className="text-center mt-8 text-white/50 text-sm">
-          This visualization helps you see patterns in your thinking throughout the week
+          Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
       </div>
     </section>
