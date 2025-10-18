@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Calendar, RefreshCw } from "lucide-react";
+import { Sparkles, Calendar, RefreshCw, Heart, Users, Palette, Zap, Brain, Mountain } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,17 @@ interface Thought {
   y: number;
   cluster?: number;
   created_at?: string;
+}
+
+interface Suggestion {
+  title: string;
+  description: string;
+  type: string;
+}
+
+interface SuggestionsData {
+  summary: string;
+  suggestions: Suggestion[];
 }
 
 // Mock thoughts data with different sentiments and positions
@@ -50,14 +61,59 @@ export const ThoughtsConstellation = () => {
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [imageryTheme, setImageryTheme] = useState("space");
+  const [suggestions, setSuggestions] = useState<SuggestionsData | null>(null);
+  const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const handleGetSuggestions = () => {
-    toast({
-      title: "Weekend Suggestions Coming Soon!",
-      description: "This demo feature will analyze your week and suggest personalized activities.",
-    });
+  const handleGetSuggestions = async () => {
+    if (thoughts.length === 0) {
+      toast({
+        title: "No thoughts yet",
+        description: "Add some thoughts first to get personalized suggestions!",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingSuggestions(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-weekend-suggestions', {
+        body: { 
+          thoughts: thoughts.map(t => ({
+            content: t.content,
+            sentiment: t.sentiment,
+            created_at: t.created_at
+          }))
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        toast({
+          title: "Error",
+          description: data.error,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setSuggestions(data);
+      toast({
+        title: "Suggestions ready!",
+        description: "Scroll down to see your personalized weekend activities.",
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to generate suggestions",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingSuggestions(false);
+    }
   };
 
   const handleReanalyzThoughts = async () => {
@@ -476,15 +532,82 @@ export const ThoughtsConstellation = () => {
             onClick={handleGetSuggestions}
             size="lg"
             className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow"
+            disabled={isGeneratingSuggestions || thoughts.length === 0}
           >
             <Calendar className="w-5 h-5 mr-2" />
-            Get Weekend Suggestions
+            {isGeneratingSuggestions ? "Generating..." : "Get Weekend Suggestions"}
           </Button>
         </div>
 
         <p className="text-center mt-8 text-white/50 text-sm">
           Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
+
+        {/* Weekend Suggestions Section */}
+        {suggestions && (
+          <div className="mt-16 animate-fade-in">
+            <Card className="p-8 bg-card/50 backdrop-blur-sm border-2 animate-fade-in">
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <Sparkles className="w-8 h-8 text-secondary" />
+                  <h3 className="text-3xl md:text-4xl font-bold text-white">
+                    Your Weekend Recharge Plan
+                  </h3>
+                </div>
+                <p className="text-lg text-white/70 max-w-2xl mx-auto">
+                  {suggestions.summary}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {suggestions.suggestions.map((suggestion, index) => {
+                  const getActivityIcon = (type: string) => {
+                    switch (type.toLowerCase()) {
+                      case 'relaxation':
+                        return <Heart className="w-6 h-6" />;
+                      case 'social':
+                        return <Users className="w-6 h-6" />;
+                      case 'creative':
+                        return <Palette className="w-6 h-6" />;
+                      case 'physical':
+                        return <Zap className="w-6 h-6" />;
+                      case 'mindful':
+                        return <Brain className="w-6 h-6" />;
+                      case 'adventure':
+                        return <Mountain className="w-6 h-6" />;
+                      default:
+                        return <Sparkles className="w-6 h-6" />;
+                    }
+                  };
+
+                  return (
+                    <Card
+                      key={index}
+                      className="p-6 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                          {getActivityIcon(suggestion.type)}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-xl font-semibold mb-2 text-white group-hover:text-primary transition-colors">
+                            {suggestion.title}
+                          </h4>
+                          <p className="text-sm text-white/70 mb-3">
+                            {suggestion.description}
+                          </p>
+                          <span className="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-medium">
+                            {suggestion.type}
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
     </section>
   );

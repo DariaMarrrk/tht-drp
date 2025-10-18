@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.reanalyze-thoughts]
 verify_jwt = false
+
+[functions.generate-weekend-suggestions]
+verify_jwt = false
