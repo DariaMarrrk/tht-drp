@@ -48,7 +48,14 @@ const Profile = () => {
       
       if (profile?.theme) {
         const savedTheme = themes.find(t => t.name === profile.theme);
-        if (savedTheme) setSelectedTheme(savedTheme);
+        if (savedTheme) {
+          setSelectedTheme(savedTheme);
+          // Apply theme colors on load
+          const root = document.documentElement;
+          root.style.setProperty("--primary", savedTheme.colors.primary);
+          root.style.setProperty("--secondary", savedTheme.colors.secondary);
+          root.style.setProperty("--accent", savedTheme.colors.accent);
+        }
       }
     } catch (error: any) {
       console.error("Error loading profile:", error);

@@ -202,10 +202,16 @@ export const ThoughtsConstellation = () => {
   };
 
   return (
-    <section className="py-24 px-6 bg-gradient-to-b from-[hsl(260_40%_12%)] to-[hsl(260_35%_8%)] relative overflow-hidden">
+    <section 
+      className="py-24 px-6 relative overflow-hidden"
+      style={{
+        background: `linear-gradient(to bottom, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.05))`,
+        backgroundColor: 'hsl(260 35% 8%)'
+      }}
+    >
       {/* Floating background elements */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
       
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-16 animate-fade-in">
