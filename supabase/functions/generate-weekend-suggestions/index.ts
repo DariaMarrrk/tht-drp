@@ -48,8 +48,11 @@ Deno.serve(async (req) => {
 
 For each suggestion, provide:
 1. A catchy title (max 50 chars)
-2. A brief description (max 150 chars) explaining why this activity suits their week
-3. An activity type (one of: relaxation, social, creative, physical, mindful, adventure)
+2. A brief WHY explanation (max 80 chars) - why this suits their week
+3. A detailed WHAT description (max 200 chars) - specific actionable steps or details about what they should do, tailored to their experiences
+4. An activity type (one of: relaxation, social, creative, physical, mindful, adventure)
+
+Be specific and reference their actual experiences. If they mentioned stress about deadlines, suggest specific relaxation techniques. If they celebrated wins, suggest ways to build on that momentum.
 
 Respond in JSON format:
 {
@@ -57,13 +60,14 @@ Respond in JSON format:
   "suggestions": [
     {
       "title": "Activity name",
-      "description": "Why this helps based on their week",
+      "why": "Why this helps based on their week",
+      "description": "Specific actionable steps for this activity",
       "type": "activity_type"
     }
   ]
 }
 
-Be warm, supportive, and specific to their actual experiences. If they had challenges, suggest restorative activities. If they had wins, suggest celebratory or momentum-building activities.`
+Be warm, supportive, and specific to their actual experiences.`
           },
           {
             role: 'user',

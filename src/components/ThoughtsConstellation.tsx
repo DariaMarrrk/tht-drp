@@ -24,6 +24,7 @@ interface Thought {
 
 interface Suggestion {
   title: string;
+  why: string;
   description: string;
   type: string;
 }
@@ -583,23 +584,28 @@ export const ThoughtsConstellation = () => {
                   return (
                     <Card
                       key={index}
-                      className="p-6 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group"
+                      className="p-6 bg-card/95 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group hover:-translate-y-1"
                     >
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-4 mb-4">
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                           {getActivityIcon(suggestion.type)}
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-xl font-semibold mb-2 text-white group-hover:text-primary transition-colors">
+                          <h4 className="text-xl font-bold mb-1 text-foreground">
                             {suggestion.title}
                           </h4>
-                          <p className="text-sm text-white/70 mb-3">
-                            {suggestion.description}
+                          <p className="text-sm text-muted-foreground italic">
+                            {suggestion.why}
                           </p>
-                          <span className="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-medium">
-                            {suggestion.type}
-                          </span>
                         </div>
+                      </div>
+                      <p className="text-sm text-foreground/80 leading-relaxed mb-4">
+                        {suggestion.description}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="inline-block px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-medium uppercase tracking-wide">
+                          {suggestion.type}
+                        </span>
                       </div>
                     </Card>
                   );
