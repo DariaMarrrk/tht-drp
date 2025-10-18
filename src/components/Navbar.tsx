@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sparkles, Menu, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,17 +22,33 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setMobileMenuOpen(false);
+  useEffect(() => {
+    if (user) {
+      loadAvatar();
+    }
+  }, [user]);
+
+  const loadAvatar = async () => {
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user?.id)
+        .single();
+
+      if (data?.avatar_url) {
+        setAvatarUrl(data.avatar_url);
+      }
+    } catch (error) {
+      console.error("Error loading avatar:", error);
+    }
   };
 
   const navLinks = [
-    { label: "Home", id: "home" },
-    { label: "Share Thoughts", id: "share" },
-    { label: "My Week", id: "constellation" },
-    { label: "How It Works", id: "how-it-works" },
-    { label: "Why This?", id: "benefits" },
+    { label: "Home", href: "/" },
+    { label: "Share Thoughts", href: "/share" },
+    { label: "My Week", href: "/week" },
+    { label: "How It Works", href: "/how-it-works" },
   ];
 
   return (
@@ -39,30 +62,44 @@ export const Navbar = () => {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <button
-            onClick={() => scrollToSection("home")}
-            className="flex items-center gap-2 group"
-          >
+          <Link to="/" className="flex items-center gap-2 group">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Thought Drop
             </span>
-          </button>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => scrollToSection(link.id)}
-                className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors relative group"
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`text-sm font-medium transition-colors relative group ${
+                  location.pathname === link.href
+                    ? "text-foreground"
+                    : "text-foreground/80 hover:text-foreground"
+                }`}
               >
                 {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
-              </button>
+                <span
+                  className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all ${
+                    location.pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
+              </Link>
             ))}
+
+            <Link to="/profile">
+              <Avatar className="w-9 h-9 cursor-pointer hover:ring-2 hover:ring-primary transition-all">
+                <AvatarImage src={avatarUrl} />
+                <AvatarFallback className="bg-gradient-to-br from-accent to-primary text-white">
+                  <User className="w-5 h-5" />
+                </AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
 
           {/* Mobile Menu */}
@@ -75,14 +112,27 @@ export const Navbar = () => {
             <SheetContent side="right" className="w-64">
               <div className="flex flex-col gap-6 mt-8">
                 {navLinks.map((link) => (
-                  <button
-                    key={link.id}
-                    onClick={() => scrollToSection(link.id)}
-                    className="text-left text-lg font-medium text-foreground/80 hover:text-foreground transition-colors"
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`text-left text-lg font-medium transition-colors ${
+                      location.pathname === link.href
+                        ? "text-foreground"
+                        : "text-foreground/80 hover:text-foreground"
+                    }`}
                   >
                     {link.label}
-                  </button>
+                  </Link>
                 ))}
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 text-lg font-medium text-foreground/80 hover:text-foreground transition-colors"
+                >
+                  <User className="w-5 h-5" />
+                  Profile
+                </Link>
               </div>
             </SheetContent>
           </Sheet>
