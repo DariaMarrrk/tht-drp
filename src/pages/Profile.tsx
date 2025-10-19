@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -50,12 +50,36 @@ const Profile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const deleteRanRef = useRef(false);
 
   useEffect(() => {
     if (user) {
       loadProfile();
     }
   }, [user]);
+
+  // Auto-delete the 'admin' account once when admin visits this page
+  useEffect(() => {
+    if (isAdmin && !deleteRanRef.current) {
+      deleteRanRef.current = true;
+      supabase.functions
+        .invoke('delete-admin')
+        .then(({ data, error }) => {
+          if (error) throw error;
+          toast({
+            title: 'Success',
+            description: data?.message || 'Admin account has been deleted',
+          });
+        })
+        .catch((err) => {
+          toast({
+            title: 'Error',
+            description: err?.message || 'Failed to delete admin account',
+            variant: 'destructive',
+          });
+        });
+    }
+  }, [isAdmin]);
 
   const loadProfile = async () => {
     try {
@@ -96,7 +120,7 @@ const Profile = () => {
         .select("role")
         .eq("user_id", user?.id)
         .eq("role", "admin")
-        .single();
+        .maybeSingle();
 
       setIsAdmin(!!roleData);
     } catch (error: any) {
