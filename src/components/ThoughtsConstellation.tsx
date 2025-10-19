@@ -13,6 +13,7 @@ import themeCampfire from "@/assets/theme-campfire.jpg";
 import themeCoralReef from "@/assets/theme-coral-reef.jpg";
 import themeCosyLibrary from "@/assets/theme-cosy-library.jpg";
 import themeStarryNight from "@/assets/theme-starry-night.jpg";
+import themeVillageSunrise from "@/assets/theme-village-sunrise.jpg";
 
 interface Thought {
   id: string;
@@ -380,6 +381,8 @@ export const ThoughtsConstellation = () => {
         return themeCosyLibrary;
       case "starry night":
         return themeStarryNight;
+      case "village sunrise":
+        return themeVillageSunrise;
       default:
         return themeSpace;
     }
