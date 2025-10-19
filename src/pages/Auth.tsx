@@ -168,7 +168,7 @@ export default function Auth() {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4">
             <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Thought Drop</h1>
+          <h1 className="text-3xl font-bold mb-2">Etheri</h1>
           <p className="text-muted-foreground">
             {mode === "initial" && "Let's get started"}
             {mode === "login-username" && "Enter your username"}
