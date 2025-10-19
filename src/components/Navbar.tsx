@@ -94,6 +94,8 @@ export const Navbar = () => {
               <div className="absolute top-1.5 left-7 w-1 h-1 rounded-full bg-white/90 animate-pulse" style={{ animationDelay: '0.6s' }} />
               <div className="absolute bottom-6.5 right-1.5 w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" style={{ animationDelay: '0.8s' }} />
               <div className="absolute top-7 left-2 w-0.5 h-0.5 rounded-full bg-white animate-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-4 right-1 w-0.5 h-0.5 rounded-full bg-white/80 animate-pulse" style={{ animationDelay: '1.2s' }} />
+              <div className="absolute bottom-4 right-7 w-0.5 h-0.5 rounded-full bg-white/70 animate-pulse" style={{ animationDelay: '1.4s' }} />
             </div>
             <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Thought Drop
