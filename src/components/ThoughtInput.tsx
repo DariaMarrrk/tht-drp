@@ -29,8 +29,15 @@ export const ThoughtInput = () => {
         }
       );
 
-      const sentiment = sentimentError ? 'neutral' : (sentimentData?.sentiment || 'neutral');
-      const crisisDetected = sentimentData?.crisisDetected || false;
+      const aiSentiment = sentimentError ? 'neutral' : (sentimentData?.sentiment || 'neutral');
+      const serverCrisis = sentimentData?.crisisDetected === true;
+
+      // Client-side fallback crisis detection (robust guardrail)
+      const lc = thought.trim().toLowerCase();
+      const clientCrisis = /(kill myself|suicide|suicidal|end my life|want to die|better off dead|not worth living|self[-\s]?harm|hurt myself|cut myself|harm myself)/i.test(lc);
+
+      const crisisDetected = serverCrisis || clientCrisis;
+      const sentiment = crisisDetected && aiSentiment === 'neutral' ? 'negative' : aiSentiment;
 
       // Save thought with analyzed sentiment
       const { error } = await supabase
@@ -38,7 +45,7 @@ export const ThoughtInput = () => {
         .insert({
           user_id: user.id,
           content: thought.trim(),
-          sentiment: sentiment,
+          sentiment,
         });
 
       if (error) throw error;
