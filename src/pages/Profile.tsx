@@ -263,27 +263,19 @@ const Profile = () => {
                 <button
                   key={theme.name}
                   onClick={() => handleThemeChange(theme)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`relative p-4 rounded-lg border-2 transition-all overflow-hidden h-32 ${
                     selectedTheme.name === theme.name
-                      ? "border-primary shadow-glow"
+                      ? "border-primary shadow-glow ring-2 ring-primary/50"
                       : "border-border hover:border-primary/50"
                   }`}
+                  style={{
+                    background: `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.secondary}) 50%, hsl(${theme.colors.accent}) 100%)`
+                  }}
                 >
-                  <div className="flex gap-2 mb-2">
-                    <div
-                      className="w-6 h-6 rounded-full"
-                      style={{ backgroundColor: `hsl(${theme.colors.primary})` }}
-                    />
-                    <div
-                      className="w-6 h-6 rounded-full"
-                      style={{ backgroundColor: `hsl(${theme.colors.secondary})` }}
-                    />
-                    <div
-                      className="w-6 h-6 rounded-full"
-                      style={{ backgroundColor: `hsl(${theme.colors.accent})` }}
-                    />
+                  <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" />
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                    <p className="text-sm font-bold text-white drop-shadow-lg">{theme.name}</p>
                   </div>
-                  <p className="text-sm font-medium">{theme.name}</p>
                 </button>
               ))}
             </div>
