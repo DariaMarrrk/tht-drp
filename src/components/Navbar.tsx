@@ -90,7 +90,10 @@ export const Navbar = () => {
             <img 
               src={logo} 
               alt="Thought Drop Logo" 
-              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
+              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform drop-shadow-lg"
+              style={{
+                filter: `drop-shadow(0 0 8px hsl(${themeColors.primary} / 0.8)) drop-shadow(0 0 2px rgba(255,255,255,0.9))`
+              }}
             />
             <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Thought Drop
