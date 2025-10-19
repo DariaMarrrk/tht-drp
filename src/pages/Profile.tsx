@@ -69,9 +69,9 @@ const Profile = () => {
       const profile = data as any;
       setUsername(profile?.username || "");
       setAvatarUrl(profile?.avatar_url || "");
-      
+
       if (profile?.theme) {
-        const savedTheme = themes.find(t => t.name === profile.theme);
+        const savedTheme = themes.find((t) => t.name === profile.theme);
         if (savedTheme) {
           setSelectedTheme(savedTheme);
           // Apply theme colors on load
@@ -83,7 +83,9 @@ const Profile = () => {
       }
 
       if (profile?.imagery_theme) {
-        const savedImageryTheme = imageryThemes.find(t => t.name.toLowerCase() === profile.imagery_theme.toLowerCase());
+        const savedImageryTheme = imageryThemes.find(
+          (t) => t.name.toLowerCase() === profile.imagery_theme.toLowerCase(),
+        );
         if (savedImageryTheme) setSelectedImageryTheme(savedImageryTheme);
       }
     } catch (error: any) {
@@ -100,15 +102,13 @@ const Profile = () => {
       const fileExt = file.name.split(".").pop();
       const filePath = `${user.id}/avatar.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
         .from("profiles")
@@ -133,7 +133,7 @@ const Profile = () => {
     }
   };
 
-  const handleThemeChange = async (theme: typeof themes[0]) => {
+  const handleThemeChange = async (theme: (typeof themes)[0]) => {
     if (!user) return;
 
     try {
@@ -145,7 +145,7 @@ const Profile = () => {
       if (error) throw error;
 
       setSelectedTheme(theme);
-      
+
       // Apply theme to document
       const root = document.documentElement;
       root.style.setProperty("--primary", theme.colors.primary);
@@ -165,7 +165,7 @@ const Profile = () => {
     }
   };
 
-  const handleImageryThemeChange = async (theme: typeof imageryThemes[0]) => {
+  const handleImageryThemeChange = async (theme: (typeof imageryThemes)[0]) => {
     if (!user) return;
 
     try {
@@ -209,9 +209,7 @@ const Profile = () => {
       <div className="container mx-auto max-w-2xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Profile</h1>
-          <p className="text-xl text-muted-foreground">
-            Customize your Thought Drop experience
-          </p>
+          <p className="text-xl text-muted-foreground">Customize your Etheri experience</p>
         </div>
 
         <div className="space-y-6">
@@ -224,7 +222,7 @@ const Profile = () => {
                   <User className="w-16 h-16" />
                 </AvatarFallback>
               </Avatar>
-              
+
               <div className="text-center">
                 <h2 className="text-2xl font-bold mb-1">{username}</h2>
                 <p className="text-sm text-muted-foreground">@{username}</p>
@@ -240,12 +238,7 @@ const Profile = () => {
                   disabled={isUploading}
                 />
                 <Label htmlFor="avatar-upload">
-                  <Button
-                    variant="outline"
-                    className="cursor-pointer"
-                    disabled={isUploading}
-                    asChild
-                  >
+                  <Button variant="outline" className="cursor-pointer" disabled={isUploading} asChild>
                     <span>
                       <Upload className="w-4 h-4 mr-2" />
                       {isUploading ? "Uploading..." : "Change Picture"}
@@ -270,7 +263,7 @@ const Profile = () => {
                       : "border-border hover:border-primary/50"
                   }`}
                   style={{
-                    background: `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.secondary}) 50%, hsl(${theme.colors.accent}) 100%)`
+                    background: `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.secondary}) 50%, hsl(${theme.colors.accent}) 100%)`,
                   }}
                 >
                   <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" />
@@ -300,8 +293,8 @@ const Profile = () => {
                   }`}
                   style={{
                     backgroundImage: `url(${theme.image})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                   }}
                 >
                   <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-all hover:bg-black/30" />
@@ -319,12 +312,7 @@ const Profile = () => {
 
           {/* Sign Out */}
           <Card className="p-6">
-            <Button
-              onClick={handleLogout}
-              variant="destructive"
-              className="w-full"
-              size="lg"
-            >
+            <Button onClick={handleLogout} variant="destructive" className="w-full" size="lg">
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
             </Button>
