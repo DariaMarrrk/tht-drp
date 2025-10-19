@@ -15,6 +15,7 @@ const themes = [
   { name: "Forest Green", colors: { primary: "150 50% 50%", secondary: "120 40% 55%", accent: "170 45% 60%" } },
   { name: "Sunset Orange", colors: { primary: "30 90% 60%", secondary: "15 85% 55%", accent: "45 80% 65%" } },
   { name: "Rose Pink", colors: { primary: "340 75% 65%", secondary: "320 70% 70%", accent: "350 80% 75%" } },
+  { name: "Monochrome", colors: { primary: "0 0% 50%", secondary: "0 0% 30%", accent: "0 0% 80%" } },
 ];
 
 const imageryThemes = [
