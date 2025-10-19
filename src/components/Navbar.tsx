@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Droplet, Menu, User } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import logo from "@/assets/logo.png";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -86,17 +87,11 @@ export const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(147,51,234,0.5)] group-hover:shadow-[0_0_25px_rgba(147,51,234,0.8)] overflow-hidden">
-              <Droplet className="w-5 h-5 text-white animate-pulse relative z-10" fill="white" fillOpacity="0.3" />
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/40 via-white/20 to-transparent opacity-60" />
-              <div className="absolute top-1 right-2 w-1.5 h-1.5 rounded-full bg-white animate-pulse" style={{ animationDelay: '0.2s' }} />
-              <div className="absolute bottom-1.5 left-1.5 w-2 h-2 rounded-full bg-white/70 animate-pulse" style={{ animationDelay: '0.4s' }} />
-              <div className="absolute top-1.5 left-7 w-1 h-1 rounded-full bg-white/90 animate-pulse" style={{ animationDelay: '0.6s' }} />
-              <div className="absolute bottom-6.5 right-1.5 w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" style={{ animationDelay: '0.8s' }} />
-              <div className="absolute top-7 left-2 w-0.5 h-0.5 rounded-full bg-white animate-pulse" style={{ animationDelay: '1s' }} />
-              <div className="absolute top-4 right-1 w-0.5 h-0.5 rounded-full bg-white/80 animate-pulse" style={{ animationDelay: '1.2s' }} />
-              <div className="absolute bottom-4 right-7 w-0.5 h-0.5 rounded-full bg-white/70 animate-pulse" style={{ animationDelay: '1.4s' }} />
-            </div>
+            <img 
+              src={logo} 
+              alt="Thought Drop Logo" 
+              className="w-10 h-10 group-hover:scale-110 transition-transform"
+            />
             <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Thought Drop
             </span>
