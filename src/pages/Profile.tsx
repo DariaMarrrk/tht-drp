@@ -19,12 +19,12 @@ import themeStarryNight from "@/assets/theme-starry-night.jpg";
 import themeVillageSunrise from "@/assets/theme-village-sunrise.jpg";
 
 const themes = [
-  { name: "Purple Dream", colors: { primary: "270 60% 65%", secondary: "200 70% 70%", accent: "280 70% 75%" } },
-  { name: "Ocean Blue", colors: { primary: "210 80% 60%", secondary: "190 70% 65%", accent: "230 60% 70%" } },
-  { name: "Forest Green", colors: { primary: "150 50% 50%", secondary: "120 40% 55%", accent: "170 45% 60%" } },
-  { name: "Sunset Orange", colors: { primary: "30 90% 60%", secondary: "15 85% 55%", accent: "45 80% 65%" } },
-  { name: "Rose Pink", colors: { primary: "340 75% 65%", secondary: "320 70% 70%", accent: "350 80% 75%" } },
-  { name: "Monochrome", colors: { primary: "0 0% 50%", secondary: "0 0% 30%", accent: "0 0% 80%" } },
+  { name: "Purple Dream", colors: { primary: "270 65% 55%", secondary: "200 80% 65%", accent: "310 75% 70%" } },
+  { name: "Ocean Blue", colors: { primary: "210 85% 50%", secondary: "180 70% 65%", accent: "240 90% 70%" } },
+  { name: "Forest Green", colors: { primary: "150 60% 45%", secondary: "85 50% 55%", accent: "170 70% 65%" } },
+  { name: "Sunset Orange", colors: { primary: "25 95% 55%", secondary: "340 80% 60%", accent: "45 90% 70%" } },
+  { name: "Rose Pink", colors: { primary: "340 80% 60%", secondary: "320 65% 70%", accent: "10 90% 75%" } },
+  { name: "Monochrome", colors: { primary: "0 0% 45%", secondary: "0 0% 25%", accent: "0 0% 85%" } },
 ];
 
 const imageryThemes = [
