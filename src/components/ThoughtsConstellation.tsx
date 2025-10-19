@@ -5,6 +5,7 @@ import { Sparkles, Calendar, RefreshCw, Heart, Users, Palette, Zap, Brain, Mount
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { CrisisDialog } from "@/components/CrisisDialog";
 import themeSpace from "@/assets/theme-space.jpg";
 import themeForest from "@/assets/theme-forest.jpg";
 import themeOcean from "@/assets/theme-ocean.jpg";
@@ -69,6 +70,7 @@ export const ThoughtsConstellation = () => {
   const [suggestions, setSuggestions] = useState<SuggestionsData | null>(null);
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0); // 0 = current week, -1 = last week, etc.
+  const [showCrisisDialog, setShowCrisisDialog] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -662,10 +664,18 @@ export const ThoughtsConstellation = () => {
                     }
                   };
 
+                  // Check if this is a crisis-related support card
+                  const isCrisisCard = /support|crisis|reach out|hotline|help|professional/i.test(
+                    suggestion.title + ' ' + suggestion.description
+                  );
+
                   return (
                     <Card
                       key={index}
-                      className="p-6 bg-card/95 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group hover:-translate-y-1"
+                      onClick={() => isCrisisCard && setShowCrisisDialog(true)}
+                      className={`p-6 bg-card/95 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group hover:-translate-y-1 ${
+                        isCrisisCard ? 'cursor-pointer' : ''
+                      }`}
                     >
                       <div className="flex items-start gap-4 mb-4">
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -695,6 +705,8 @@ export const ThoughtsConstellation = () => {
             </Card>
           </div>
         )}
+
+        <CrisisDialog open={showCrisisDialog} onOpenChange={setShowCrisisDialog} />
       </div>
     </section>
   );
