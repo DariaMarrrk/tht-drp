@@ -6,7 +6,7 @@ import { Menu, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.svg";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
