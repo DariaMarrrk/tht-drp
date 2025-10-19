@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Calendar, RefreshCw, Heart, Users, Palette, Zap, Brain, Mountain } from "lucide-react";
+import { Sparkles, Calendar, RefreshCw, Heart, Users, Palette, Zap, Brain, Mountain, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -630,6 +630,8 @@ export const ThoughtsConstellation = () => {
                         return <Brain className="w-6 h-6" />;
                       case 'adventure':
                         return <Mountain className="w-6 h-6" />;
+                      case 'reminder':
+                        return <Bell className="w-6 h-6" />;
                       default:
                         return <Sparkles className="w-6 h-6" />;
                     }
