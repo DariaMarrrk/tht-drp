@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Upload, User } from "lucide-react";
+import { LogOut, Upload, User, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -202,6 +202,29 @@ const Profile = () => {
     }
   };
 
+  const handleDeleteAdmin = async () => {
+    if (!confirm("Are you sure you want to delete the admin account? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-admin');
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: data.message || "Admin account has been deleted",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete admin account",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -320,6 +343,24 @@ const Profile = () => {
 
           {/* User Cleanup (Admin) */}
           {isAdmin && <CleanupUsers />}
+
+          {/* Delete Admin Account (Admin) */}
+          {isAdmin && (
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold mb-2">Delete Admin Account</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Permanently delete the admin account from the database
+              </p>
+              <Button 
+                onClick={handleDeleteAdmin} 
+                variant="destructive" 
+                className="w-full"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Admin Account
+              </Button>
+            </Card>
+          )}
 
           {/* Sign Out */}
           <Card className="p-6">
