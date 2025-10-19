@@ -147,7 +147,7 @@ export default function Auth() {
 
       toast({
         title: "Account created!",
-        description: "Welcome to Thought Drop.",
+        description: "Welcome to Etheri.",
       });
       navigate("/");
     } catch (error: any) {
