@@ -316,13 +316,22 @@ export const ThoughtsConstellation = () => {
           };
         }
         
+        // Calculate position and clamp to keep circles within bounds
+        const radius = size / 2;
+        const rawX = sentimentPos.baseX + positionOffset.x;
+        const rawY = sentimentPos.baseY + positionOffset.y;
+        
+        // Clamp positions to keep circles fully visible within 900x600 viewBox
+        const clampedX = Math.max(radius, Math.min(900 - radius, rawX));
+        const clampedY = Math.max(radius, Math.min(600 - radius, rawY));
+        
         positionedThoughts.push({
           id: thought.id,
           content: thought.content,
           sentiment: thought.sentiment,
           created_at: thought.created_at,
-          x: sentimentPos.baseX + positionOffset.x,
-          y: sentimentPos.baseY + positionOffset.y,
+          x: clampedX,
+          y: clampedY,
           size,
         });
       });
