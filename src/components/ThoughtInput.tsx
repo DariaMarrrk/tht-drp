@@ -6,10 +6,12 @@ import { Send, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { CrisisDialog } from "@/components/CrisisDialog";
 
 export const ThoughtInput = () => {
   const [thought, setThought] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCrisisDialog, setShowCrisisDialog] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -28,6 +30,7 @@ export const ThoughtInput = () => {
       );
 
       const sentiment = sentimentError ? 'neutral' : (sentimentData?.sentiment || 'neutral');
+      const crisisDetected = sentimentData?.crisisDetected || false;
 
       // Save thought with analyzed sentiment
       const { error } = await supabase
@@ -40,10 +43,16 @@ export const ThoughtInput = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Thought saved",
-        description: "Your thought has been captured for this week's analysis.",
-      });
+      // Show crisis dialog if detected
+      if (crisisDetected) {
+        setShowCrisisDialog(true);
+      } else {
+        toast({
+          title: "Thought saved",
+          description: "Your thought has been captured for this week's analysis.",
+        });
+      }
+      
       setThought("");
     } catch (error: any) {
       toast({
@@ -109,6 +118,11 @@ export const ThoughtInput = () => {
             </div>
           </div>
         </Card>
+
+        <CrisisDialog 
+          open={showCrisisDialog} 
+          onOpenChange={setShowCrisisDialog}
+        />
       </div>
     </section>
   );
