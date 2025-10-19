@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Trash2, ChevronDown, ChevronUp, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,13 +39,43 @@ export const CleanupUsers = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [impersonatingUserId, setImpersonatingUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (isExpanded) {
+    checkAdminRole();
+  }, [user]);
+
+  useEffect(() => {
+    if (isExpanded && isAdmin) {
       loadUsers();
     }
-  }, [isExpanded]);
+  }, [isExpanded, isAdmin]);
+
+  const checkAdminRole = async () => {
+    if (!user) {
+      setIsAdmin(false);
+      setIsCheckingAdmin(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .single();
+
+      setIsAdmin(!!data);
+    } catch (error) {
+      setIsAdmin(false);
+    } finally {
+      setIsCheckingAdmin(false);
+    }
+  };
 
   const loadUsers = async () => {
     setIsLoadingUsers(true);
@@ -121,6 +152,11 @@ export const CleanupUsers = () => {
       setImpersonatingUserId(null);
     }
   };
+
+  // Don't render anything if checking admin status or user is not admin
+  if (isCheckingAdmin || !isAdmin) {
+    return null;
+  }
 
   return (
     <Card className="p-6">
