@@ -46,6 +46,7 @@ const Profile = () => {
   const [selectedTheme, setSelectedTheme] = useState(themes[0]);
   const [selectedImageryTheme, setSelectedImageryTheme] = useState(imageryThemes[0]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -88,6 +89,16 @@ const Profile = () => {
         );
         if (savedImageryTheme) setSelectedImageryTheme(savedImageryTheme);
       }
+
+      // Check if user has admin role
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user?.id)
+        .eq("role", "admin")
+        .single();
+
+      setIsAdmin(!!roleData);
     } catch (error: any) {
       console.error("Error loading profile:", error);
     }
@@ -308,7 +319,7 @@ const Profile = () => {
           </Card>
 
           {/* User Cleanup (Admin) */}
-          <CleanupUsers />
+          {isAdmin && <CleanupUsers />}
 
           {/* Sign Out */}
           <Card className="p-6">
