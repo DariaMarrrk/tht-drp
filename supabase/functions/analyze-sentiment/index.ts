@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a sentiment analysis assistant. Analyze the emotional tone of the given text and classify it as exactly one of: "positive", "neutral", or "negative". Respond with ONLY the single word classification, nothing else.'
+            content: 'You are a sentiment analysis assistant. Analyze the emotional tone of the given text and classify it as exactly one of: "positive", "neutral", or "negative". Pay special attention to emotional intensity indicators: ALL CAPS (indicates strong emotion), multiple exclamation marks (!!!, shows excitement or distress), emojis (😊😢😡 reveal true feelings), and excessive punctuation (???, shows confusion or concern). These formatting cues often reveal stronger sentiment than the words alone. Respond with ONLY the single word classification, nothing else.'
           },
           {
             role: 'user',
