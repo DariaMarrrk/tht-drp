@@ -12,7 +12,11 @@ export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [themeColors, setThemeColors] = useState({ primary: "270 60% 65%", secondary: "200 70% 70%", accent: "280 70% 75%" });
+  const [themeColors, setThemeColors] = useState({
+    primary: "270 60% 65%",
+    secondary: "200 70% 70%",
+    accent: "280 70% 75%",
+  });
   const location = useLocation();
   const { user } = useAuth();
 
@@ -32,16 +36,12 @@ export const Navbar = () => {
 
   const loadProfile = async () => {
     try {
-      const { data } = await supabase
-        .from("profiles")
-        .select("avatar_url, theme")
-        .eq("id", user?.id)
-        .single();
+      const { data } = await supabase.from("profiles").select("avatar_url, theme").eq("id", user?.id).single();
 
       if (data?.avatar_url) {
         setAvatarUrl(data.avatar_url);
       }
-      
+
       if (data?.theme) {
         const themes: Record<string, { primary: string; secondary: string; accent: string }> = {
           "Purple Dream": { primary: "270 60% 65%", secondary: "200 70% 70%", accent: "280 70% 75%" },
@@ -50,7 +50,7 @@ export const Navbar = () => {
           "Sunset Orange": { primary: "30 90% 60%", secondary: "15 85% 55%", accent: "45 80% 65%" },
           "Rose Pink": { primary: "340 75% 65%", secondary: "320 70% 70%", accent: "350 80% 75%" },
         };
-        
+
         const savedTheme = themes[data.theme];
         if (savedTheme) {
           setThemeColors(savedTheme);
@@ -70,9 +70,7 @@ export const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "backdrop-blur-md shadow-lg border-b"
-          : "bg-transparent"
+        isScrolled ? "backdrop-blur-md shadow-lg border-b" : "bg-transparent"
       }`}
       style={
         isScrolled
@@ -87,16 +85,16 @@ export const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <img 
-              src={logo} 
-              alt="Thought Drop Logo" 
+            <img
+              src={logo}
+              alt="Thought Drop Logo"
               className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
               style={{
-                filter: `drop-shadow(0 0 12px hsl(${themeColors.primary})) drop-shadow(0 0 4px rgba(255,255,255,1)) drop-shadow(0 2px 6px hsl(${themeColors.secondary} / 0.5))`
+                filter: `drop-shadow(0 0 12px hsl(${themeColors.primary})) drop-shadow(0 0 4px rgba(255,255,255,1)) drop-shadow(0 2px 6px hsl(${themeColors.secondary} / 0.5))`,
               }}
             />
             <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              Thought Drop
+              ThoughtDrop
             </span>
           </Link>
 
@@ -112,8 +110,8 @@ export const Navbar = () => {
                       ? "text-white"
                       : "text-white/70 hover:text-white"
                     : location.pathname === link.href
-                    ? "text-foreground"
-                    : "text-foreground/80 hover:text-foreground"
+                      ? "text-foreground"
+                      : "text-foreground/80 hover:text-foreground"
                 }`}
               >
                 {link.label}
@@ -155,8 +153,8 @@ export const Navbar = () => {
                           ? "text-white"
                           : "text-white/70 hover:text-white"
                         : location.pathname === link.href
-                        ? "text-foreground"
-                        : "text-foreground/80 hover:text-foreground"
+                          ? "text-foreground"
+                          : "text-foreground/80 hover:text-foreground"
                     }`}
                   >
                     {link.label}
