@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     // Update the admin user's password
     const { data: updateData, error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       profile.id,
-      { password: 'admin' }
+      { password: 'admin123' }
     );
 
     if (updateError) {
@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Admin password has been reset to "admin"',
+        message: 'Admin password has been reset to "admin123"',
         userId: profile.id 
       }),
       { 
