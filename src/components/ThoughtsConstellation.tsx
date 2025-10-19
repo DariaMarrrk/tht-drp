@@ -209,11 +209,30 @@ export const ThoughtsConstellation = () => {
       // Heuristic fallback sentiment (used only if DB sentiment is missing or neutral)
       const detectHeuristicSentiment = (text: string): "positive" | "neutral" | "negative" => {
         const t = text.toLowerCase();
-        const positive = ["amazing","great","won","love","grateful","refreshing","well","good","satisfying","proud","happy"];
-        const negative = ["tired","sad","overwhelmed","stressed","stuck","anxious","angry","bad","frustrated"];
-        if (positive.some(w => t.includes(w))) return "positive";
-        if (negative.some(w => t.includes(w))) return "negative";
-        return "neutral";
+        const hasCelebrationEmoji = /[🎉✨🥳😊😁😄🙂👍❤️💯👏]/.test(text);
+        const exclamations = (text.match(/!/g)?.length ?? 0);
+        const hasCapsEmphasis = /\b[A-Z]{3,}\b/.test(text);
+        const celebratoryWords = ['yay','woohoo','hooray','yippee','congrats','congratulations','success','awesome','great','amazing','stoked','thrilled','excited','proud','happy','relieved'];
+        const achievementPatterns = [
+          /(passed|ace[dp]?|cleared|cracked).*(test|exam|class|course|quiz|assignment|interview)/i,
+          /(got|landed|received|accepted).*(job|offer|promotion|internship|raise|admission|scholarship)/i,
+          /(won|victory|beat|trophy|medal)/i,
+          /(graduated|made it|finished|completed)/i,
+        ];
+        const negativeWords = ['tired','sad','overwhelmed','stressed','stuck','anxious','angry','bad','frustrated','failed','broke','lonely','sick'];
+
+        const looksPositive = (
+          achievementPatterns.some(re => re.test(text)) ||
+          (t.includes('passed') && /(test|exam|class|course|quiz)/.test(t)) ||
+          hasCelebrationEmoji ||
+          celebratoryWords.some(w => t.includes(w)) ||
+          exclamations >= 2 ||
+          (hasCapsEmphasis && (t.includes('pass') || t.includes('yes') || t.includes('yay') || t.includes('won')))
+        );
+
+        if (looksPositive) return 'positive';
+        if (negativeWords.some(w => t.includes(w))) return 'negative';
+        return 'neutral';
       };
 
       // Helper function to extract keywords from text

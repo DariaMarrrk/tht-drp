@@ -46,8 +46,16 @@ Deno.serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content: 'You are a sentiment analysis assistant. Analyze the emotional tone of the given text and classify it as exactly one of: "positive", "neutral", or "negative". Respond with ONLY the single word classification, nothing else.'
+                content: 'You are a sentiment analysis assistant specializing in detecting genuine emotions. Classify text as "positive", "neutral", or "negative". BE HIGHLY SENSITIVE TO POSITIVE INDICATORS: achievements (passed test, got job, won), celebrations (yay, woohoo, yes), ALL CAPS with excitement, multiple exclamation marks (!!!, !!!!!!), happy emojis (😊🎉✨), and success language. If someone is celebrating, achieving something, or expressing joy/excitement, it is POSITIVE - not neutral. Neutral should only be for truly mundane observations without emotional weight. Examples: "I passed my driving test!" = positive, "YAY!! I PASSED ALL MY EXAMS!!!!!!!" = positive, "I went to the store" = neutral. Respond with ONLY the single word classification.'
               },
+              { role: 'user', content: 'Analyze the sentiment of this thought: "I passed my driving test!"' },
+              { role: 'assistant', content: 'positive' },
+              { role: 'user', content: 'Analyze the sentiment of this thought: "YAY!! I PASSED ALL MY EXAMS!!!!!!!"' },
+              { role: 'assistant', content: 'positive' },
+              { role: 'user', content: 'Analyze the sentiment of this thought: "I went to the store."' },
+              { role: 'assistant', content: 'neutral' },
+              { role: 'user', content: 'Analyze the sentiment of this thought: "I failed the exam."' },
+              { role: 'assistant', content: 'negative' },
               {
                 role: 'user',
                 content: `Analyze the sentiment of this thought: "${thought.content}"`
@@ -66,9 +74,36 @@ Deno.serve(async (req) => {
         const data = await aiResponse.json();
         const sentiment = data.choices[0]?.message?.content?.trim().toLowerCase();
 
-        // Validate sentiment
-        const validSentiments = ['positive', 'neutral', 'negative'];
-        const finalSentiment = validSentiments.includes(sentiment) ? sentiment : 'neutral';
+        // Validate and adjust with heuristics
+        const validSentiments = ['positive', 'neutral', 'negative'] as const;
+        let finalSentiment: 'positive' | 'neutral' | 'negative' = (validSentiments as readonly string[]).includes((sentiment as any)) ? (sentiment as any) : 'neutral';
+
+        const text = String(thought.content);
+        const lowered = text.toLowerCase();
+        const isNegatedAchievement = /(did\s+not|didn't|not)\s+(pass|get|win|accept|graduate|finish|complete)/i.test(text);
+        const hasCelebrationEmoji = /[🎉✨🥳😊😁😄🙂👍❤️💯👏]/.test(text);
+        const celebratoryWords = ['yay','woohoo','hooray','yippee','congrats','congratulations','success','awesome','great','amazing','stoked','thrilled','excited','proud','happy','relieved'];
+        const achievementPatterns = [
+          /(passed|ace[dp]?|cleared|cracked).*(test|exam|class|course|quiz|assignment|interview)/i,
+          /(got|landed|received|accepted).*(job|offer|promotion|internship|raise|admission|scholarship)/i,
+          /(won|victory|beat|trophy|medal)/i,
+          /(graduated|made it|finished|completed)/i,
+        ];
+        const exclamations = (text.match(/!/g)?.length ?? 0);
+        const hasCapsEmphasis = /\b[A-Z]{3,}\b/.test(text);
+
+        const looksPositive = !isNegatedAchievement && (
+          hasCelebrationEmoji ||
+          celebratoryWords.some(w => lowered.includes(w)) ||
+          achievementPatterns.some(re => re.test(text)) ||
+          (lowered.includes('passed') && /(test|exam|class|course|quiz)/.test(lowered)) ||
+          exclamations >= 2 ||
+          (hasCapsEmphasis && (lowered.includes('pass') || lowered.includes('yes') || lowered.includes('yay') || lowered.includes('won')))
+        );
+
+        if (finalSentiment === 'neutral' && looksPositive) {
+          finalSentiment = 'positive';
+        }
 
         // Update thought
         const updateResponse = await fetch(`${supabaseUrl}/rest/v1/thoughts?id=eq.${thought.id}`, {
