@@ -90,7 +90,7 @@ export const Navbar = () => {
             <img 
               src={logo} 
               alt="Thought Drop Logo" 
-              className="w-10 h-10 group-hover:scale-110 transition-transform"
+              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
             />
             <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Thought Drop
