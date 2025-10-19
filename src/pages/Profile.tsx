@@ -8,6 +8,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import themeSpace from "@/assets/theme-space.jpg";
+import themeForest from "@/assets/theme-forest.jpg";
+import themeOcean from "@/assets/theme-ocean.jpg";
+import themeGarden from "@/assets/theme-garden.jpg";
+import themeCampfire from "@/assets/theme-campfire.jpg";
+import themeCoralReef from "@/assets/theme-coral-reef.jpg";
+import themeCosyLibrary from "@/assets/theme-cosy-library.jpg";
+import themeStarryNight from "@/assets/theme-starry-night.jpg";
+import themeVillageSunrise from "@/assets/theme-village-sunrise.jpg";
 
 const themes = [
   { name: "Purple Dream", colors: { primary: "270 60% 65%", secondary: "200 70% 70%", accent: "280 70% 75%" } },
@@ -19,15 +28,15 @@ const themes = [
 ];
 
 const imageryThemes = [
-  { name: "Space", description: "Cosmic serenity" },
-  { name: "Forest", description: "Woodland peace" },
-  { name: "Ocean", description: "Coastal calm" },
-  { name: "Garden", description: "Botanical tranquility" },
-  { name: "Campfire", description: "Cozy warmth" },
-  { name: "Coral Reef", description: "Underwater wonder" },
-  { name: "Cosy Library", description: "Literary comfort" },
-  { name: "Starry Night", description: "Celestial dreams" },
-  { name: "Village Sunrise", description: "Morning hope" },
+  { name: "Space", description: "Cosmic serenity", image: themeSpace },
+  { name: "Forest", description: "Woodland peace", image: themeForest },
+  { name: "Ocean", description: "Coastal calm", image: themeOcean },
+  { name: "Garden", description: "Botanical tranquility", image: themeGarden },
+  { name: "Campfire", description: "Cozy warmth", image: themeCampfire },
+  { name: "Coral Reef", description: "Underwater wonder", image: themeCoralReef },
+  { name: "Cosy Library", description: "Literary comfort", image: themeCosyLibrary },
+  { name: "Starry Night", description: "Celestial dreams", image: themeStarryNight },
+  { name: "Village Sunrise", description: "Morning hope", image: themeVillageSunrise },
 ];
 
 const Profile = () => {
@@ -291,14 +300,22 @@ const Profile = () => {
                 <button
                   key={theme.name}
                   onClick={() => handleImageryThemeChange(theme)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`relative p-4 rounded-lg border-2 transition-all overflow-hidden h-32 ${
                     selectedImageryTheme.name === theme.name
-                      ? "border-primary shadow-glow"
+                      ? "border-primary shadow-glow ring-2 ring-primary/50"
                       : "border-border hover:border-primary/50"
                   }`}
+                  style={{
+                    backgroundImage: `url(${theme.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }}
                 >
-                  <p className="text-sm font-medium mb-1">{theme.name}</p>
-                  <p className="text-xs text-muted-foreground">{theme.description}</p>
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-all hover:bg-black/30" />
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
+                    <p className="text-sm font-bold mb-1 drop-shadow-lg">{theme.name}</p>
+                    <p className="text-xs drop-shadow-lg">{theme.description}</p>
+                  </div>
                 </button>
               ))}
             </div>
