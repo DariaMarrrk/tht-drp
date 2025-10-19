@@ -25,6 +25,7 @@ const imageryThemes = [
   { name: "Campfire", description: "Cozy warmth" },
   { name: "Coral Reef", description: "Underwater wonder" },
   { name: "Cosy Library", description: "Literary comfort" },
+  { name: "Starry Night", description: "Celestial dreams" },
 ];
 
 const Profile = () => {
