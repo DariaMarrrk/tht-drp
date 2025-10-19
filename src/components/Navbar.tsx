@@ -89,11 +89,11 @@ export const Navbar = () => {
             <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(147,51,234,0.5)] group-hover:shadow-[0_0_25px_rgba(147,51,234,0.8)] overflow-hidden">
               <Droplet className="w-5 h-5 text-white animate-pulse relative z-10" fill="white" fillOpacity="0.3" />
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/40 via-white/20 to-transparent opacity-60" />
-              <div className="absolute top-2 right-2.5 w-1.5 h-1.5 rounded-full bg-white animate-pulse" style={{ animationDelay: '0.2s' }} />
-              <div className="absolute bottom-3 left-3 w-2 h-2 rounded-full bg-white/70 animate-pulse" style={{ animationDelay: '0.4s' }} />
-              <div className="absolute top-3.5 left-2 w-1 h-1 rounded-full bg-white/90 animate-pulse" style={{ animationDelay: '0.6s' }} />
-              <div className="absolute bottom-2 right-3 w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" style={{ animationDelay: '0.8s' }} />
-              <div className="absolute top-1.5 left-4 w-0.5 h-0.5 rounded-full bg-white animate-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-1 right-1.5 w-1.5 h-1.5 rounded-full bg-white animate-pulse" style={{ animationDelay: '0.2s' }} />
+              <div className="absolute bottom-1.5 left-1 w-2 h-2 rounded-full bg-white/70 animate-pulse" style={{ animationDelay: '0.4s' }} />
+              <div className="absolute top-1.5 left-6 w-1 h-1 rounded-full bg-white/90 animate-pulse" style={{ animationDelay: '0.6s' }} />
+              <div className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" style={{ animationDelay: '0.8s' }} />
+              <div className="absolute top-6 left-1.5 w-0.5 h-0.5 rounded-full bg-white animate-pulse" style={{ animationDelay: '1s' }} />
             </div>
             <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Thought Drop
