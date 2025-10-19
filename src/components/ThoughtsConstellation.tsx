@@ -10,6 +10,7 @@ import themeForest from "@/assets/theme-forest.jpg";
 import themeOcean from "@/assets/theme-ocean.jpg";
 import themeGarden from "@/assets/theme-garden.jpg";
 import themeCampfire from "@/assets/theme-campfire.jpg";
+import themeCoralReef from "@/assets/theme-coral-reef.jpg";
 
 interface Thought {
   id: string;
@@ -64,6 +65,7 @@ export const ThoughtsConstellation = () => {
   const [imageryTheme, setImageryTheme] = useState("space");
   const [suggestions, setSuggestions] = useState<SuggestionsData | null>(null);
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
+  const [weekOffset, setWeekOffset] = useState(0); // 0 = current week, -1 = last week, etc.
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -152,7 +154,7 @@ export const ThoughtsConstellation = () => {
       loadThoughts();
       loadImageryTheme();
     }
-  }, [user]);
+  }, [user, weekOffset]);
 
   const loadImageryTheme = async () => {
     try {
@@ -173,15 +175,30 @@ export const ThoughtsConstellation = () => {
 
   const loadThoughts = async () => {
     try {
+      // Calculate the start and end of the selected week
+      const now = new Date();
+      const currentDay = now.getDay();
+      const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+      
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - daysToMonday + (weekOffset * 7));
+      weekStart.setHours(0, 0, 0, 0);
+      
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 7);
+      weekEnd.setHours(23, 59, 59, 999);
+
       const { data, error } = await supabase
         .from("thoughts")
         .select("*")
+        .gte("created_at", weekStart.toISOString())
+        .lt("created_at", weekEnd.toISOString())
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        setThoughts(mockThoughts);
+        setThoughts([]);
         setIsLoading(false);
         return;
       }
@@ -355,9 +372,17 @@ export const ThoughtsConstellation = () => {
         return themeGarden;
       case "campfire":
         return themeCampfire;
+      case "coral reef":
+        return themeCoralReef;
       default:
         return themeSpace;
     }
+  };
+
+  const getWeekLabel = () => {
+    if (weekOffset === 0) return "This Week";
+    if (weekOffset === -1) return "Last Week";
+    return `${Math.abs(weekOffset)} Weeks Ago`;
   };
 
   return (
@@ -382,12 +407,34 @@ export const ThoughtsConstellation = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="w-8 h-8 text-primary" />
             <h2 className="text-4xl md:text-5xl font-bold text-white">
-              My Thoughts This Week
+              My Thoughts {getWeekLabel()}
             </h2>
           </div>
         </div>
 
         <Card className="p-8 bg-[hsl(260_35%_10%)]/80 backdrop-blur-sm border-2 border-white/10 animate-fade-in">
+          {/* Week Navigation */}
+          <div className="flex items-center justify-between mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setWeekOffset(weekOffset - 1)}
+              className="bg-card/50 backdrop-blur-sm border-primary/50 hover:bg-primary/10 text-white"
+            >
+              ← Previous Week
+            </Button>
+            <span className="text-white/80 font-medium">{getWeekLabel()}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setWeekOffset(weekOffset + 1)}
+              disabled={weekOffset === 0}
+              className="bg-card/50 backdrop-blur-sm border-primary/50 hover:bg-primary/10 text-white disabled:opacity-50"
+            >
+              Next Week →
+            </Button>
+          </div>
+
           <div className="relative w-full" style={{ height: "600px" }}>
             {isLoading ? (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -395,7 +442,11 @@ export const ThoughtsConstellation = () => {
               </div>
             ) : thoughts.length === 0 ? (
               <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-white/70">No thoughts yet. Start sharing!</p>
+                <p className="text-white/70 text-lg">
+                  {weekOffset === 0 
+                    ? "Drop a thought to start this week's dashboard" 
+                    : "No thoughts for this week"}
+                </p>
               </div>
             ) : (
               <>
