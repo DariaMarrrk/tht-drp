@@ -7,11 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import heroBackground from "@/assets/hero-background.jpg";
+import { CrisisDialog } from "@/components/CrisisDialog";
 
 export const Hero = () => {
   const [thought, setThought] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageryTheme, setImageryTheme] = useState("space");
+  const [showCrisisDialog, setShowCrisisDialog] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -41,25 +43,40 @@ export const Hero = () => {
 
     setIsSubmitting(true);
     try {
+      // 1) Call crisis-aware sentiment function
+      const { data: sentimentData, error: sentimentError } = await supabase.functions.invoke(
+        'analyze-sentiment',
+        { body: { content: thought.trim() } }
+      );
+
+      const aiSentiment = sentimentError ? 'neutral' : (sentimentData?.sentiment || 'neutral');
+      const serverCrisis = sentimentData?.crisisDetected === true;
+
+      // 2) Client-side crisis fallback (regex)
+      const lc = thought.trim().toLowerCase();
+      const clientCrisis = /(kill myself|suicide|suicidal|end my life|want to die|better off dead|not worth living|self[-\s]?harm|hurt myself|cut myself|harm myself)/i.test(lc);
+
+      const crisisDetected = serverCrisis || clientCrisis;
+      const sentiment = crisisDetected && aiSentiment === 'neutral' ? 'negative' : aiSentiment;
+
+      // 3) Save thought
       const { error } = await supabase.from("thoughts").insert({
         user_id: user.id,
         content: thought.trim(),
-        sentiment: "neutral",
+        sentiment,
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Thought saved",
-        description: "Thought added to the week board",
-      });
+      // 4) UI feedback
+      if (crisisDetected) {
+        setShowCrisisDialog(true);
+      } else {
+        toast({ title: "Thought saved", description: "Thought added to the week board" });
+      }
       setThought("");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -137,6 +154,7 @@ export const Hero = () => {
             </Button>
           </div>
         </form>
+        <CrisisDialog open={showCrisisDialog} onOpenChange={setShowCrisisDialog} />
       </div>
     </section>
   );

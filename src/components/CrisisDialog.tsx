@@ -20,8 +20,8 @@ export const CrisisDialog = ({ open, onOpenChange }: CrisisDialogProps) => {
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-rose-400 to-pink-400 flex items-center justify-center">
-              <Heart className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+              <Heart className="w-8 h-8 text-primary-foreground" />
             </div>
           </div>
           <AlertDialogTitle className="text-center text-2xl">
