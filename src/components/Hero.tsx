@@ -24,11 +24,7 @@ export const Hero = () => {
 
   const loadImageryTheme = async () => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("imagery_theme")
-        .eq("id", user?.id)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("imagery_theme").eq("id", user?.id).single();
 
       if (error) throw error;
       if (data?.imagery_theme) {
@@ -45,13 +41,11 @@ export const Hero = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("thoughts")
-        .insert({
-          user_id: user.id,
-          content: thought.trim(),
-          sentiment: "neutral",
-        });
+      const { error } = await supabase.from("thoughts").insert({
+        user_id: user.id,
+        content: thought.trim(),
+        sentiment: "neutral",
+      });
 
       if (error) throw error;
 
@@ -91,35 +85,38 @@ export const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
       {/* Background Image with Overlay */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: `url(${heroBackground})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-        <div 
+        <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(to bottom, hsl(var(--background) / 0.85) 0%, hsl(var(--background) / 0.7) 50%, hsl(var(--background) / 0.95) 100%), ${getThemePattern()}`
+            background: `linear-gradient(to bottom, hsl(var(--background) / 0.85) 0%, hsl(var(--background) / 0.7) 50%, hsl(var(--background) / 0.95) 100%), ${getThemePattern()}`,
           }}
         />
       </div>
 
       {/* Floating Circles */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-      
+      <div
+        className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float"
+        style={{ animationDelay: "2s" }}
+      />
+
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center animate-fade-in">
         <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-          Thought Drop
+          ThoughtDrop
         </h1>
         <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto">
           Share your thoughts throughout the week. Get AI-powered weekend suggestions tailored to help you recharge.
         </p>
-        
+
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
           <div className="flex gap-3 items-center bg-card/80 backdrop-blur-sm border-2 border-border rounded-full p-2 shadow-glow">
             <Input
