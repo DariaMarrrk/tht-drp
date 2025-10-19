@@ -46,14 +46,18 @@ Deno.serve(async (req) => {
 
     console.log('Found admin user:', profile.id);
 
-    // Update the admin user's password
+    // Update the admin user's email and password
     const { data: updateData, error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       profile.id,
-      { password: 'admin123' }
+      { 
+        email: 'admin@etheri.app',
+        email_confirm: true,
+        password: 'admin123'
+      }
     );
 
     if (updateError) {
-      console.error('Error updating password:', updateError);
+      console.error('Error updating password/email:', updateError);
       return new Response(
         JSON.stringify({ error: updateError.message }),
         { 
@@ -63,13 +67,14 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Password reset successful for admin user');
+    console.log('Password/email reset successful for admin user');
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Admin password has been reset to "admin123"',
-        userId: profile.id 
+        message: 'Admin credentials set: email admin@etheri.app, password admin123',
+        userId: profile.id,
+        email: 'admin@etheri.app'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
