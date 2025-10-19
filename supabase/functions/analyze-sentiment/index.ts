@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a sentiment analysis assistant. Analyze the emotional tone of the given text and classify it as exactly one of: "positive", "neutral", or "negative". Pay special attention to emotional intensity indicators: ALL CAPS (indicates strong emotion), multiple exclamation marks (!!!, shows excitement or distress), emojis (😊😢😡 reveal true feelings), and excessive punctuation (???, shows confusion or concern). These formatting cues often reveal stronger sentiment than the words alone. Respond with ONLY the single word classification, nothing else.'
+            content: 'You are a sentiment analysis assistant specializing in detecting genuine emotions. Classify text as "positive", "neutral", or "negative". BE HIGHLY SENSITIVE TO POSITIVE INDICATORS: achievements (passed test, got job, won), celebrations (yay, woohoo, yes), ALL CAPS with excitement, multiple exclamation marks (!!!, !!!!!!), happy emojis (😊🎉✨), and success language. If someone is celebrating, achieving something, or expressing joy/excitement, it is POSITIVE - not neutral. Neutral should only be for truly mundane observations without emotional weight. Examples: "I passed my driving test!" = positive, "YAY!! I PASSED ALL MY EXAMS!!!!!!!" = positive, "I went to the store" = neutral. Respond with ONLY the single word classification.'
           },
           {
             role: 'user',
