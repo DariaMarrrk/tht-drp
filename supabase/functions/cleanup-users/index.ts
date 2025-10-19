@@ -25,11 +25,11 @@ Deno.serve(async (req) => {
 
     console.log('Starting user cleanup...');
 
-    // Get all profiles except username "account"
+    // Get all profiles except username "admin"
     const { data: profilesToDelete, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('id, username')
-      .neq('username', 'account');
+      .neq('username', 'admin');
 
     if (profileError) {
       console.error('Error fetching profiles:', profileError);
