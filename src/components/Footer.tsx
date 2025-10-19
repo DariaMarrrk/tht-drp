@@ -12,7 +12,7 @@ export const Footer = () => {
             <span className="font-bold text-xl">ThoughtDrop</span>
           </div>
 
-          <p className="text-sm text-muted-foreground">© 2025 Thought Drop. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© 2025 ThoughtDrop. All rights reserved.</p>
         </div>
       </div>
     </footer>
