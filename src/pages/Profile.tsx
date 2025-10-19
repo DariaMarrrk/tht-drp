@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { CleanupUsers } from "@/components/CleanupUsers";
 import themeSpace from "@/assets/theme-space.jpg";
 import themeForest from "@/assets/theme-forest.jpg";
 import themeOcean from "@/assets/theme-ocean.jpg";
@@ -312,6 +313,9 @@ const Profile = () => {
               ))}
             </div>
           </Card>
+
+          {/* User Cleanup (Admin) */}
+          <CleanupUsers />
 
           {/* Sign Out */}
           <Card className="p-6">
