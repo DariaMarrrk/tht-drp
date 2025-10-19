@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a sentiment analysis assistant specializing in detecting genuine emotions. Classify text as "positive", "neutral", or "negative". BE HIGHLY SENSITIVE TO POSITIVE INDICATORS: achievements (passed test, got job, won), celebrations (yay, woohoo, yes), ALL CAPS with excitement, multiple exclamation marks (!!!, !!!!!!), happy emojis (😊🎉✨), and success language. If someone is celebrating, achieving something, or expressing joy/excitement, it is POSITIVE - not neutral. Neutral should only be for truly mundane observations without emotional weight. Examples: "I passed my driving test!" = positive, "YAY!! I PASSED ALL MY EXAMS!!!!!!!" = positive, "I went to the store" = neutral. Respond with ONLY the single word classification.'
+            content: 'You are a sentiment analysis assistant specializing in detecting genuine emotions. Classify text as "positive", "neutral", or "negative". BE HIGHLY SENSITIVE TO BOTH POSITIVE AND NEGATIVE INDICATORS:\n\nPOSITIVE: achievements (passed test, got job, won), celebrations (yay, woohoo, yes), ALL CAPS with excitement, multiple exclamation marks (!!!, !!!!!!), happy emojis (😊🎉✨), and success language.\n\nNEGATIVE: failures (failed test, didn\'t pass, got rejected, fired), losses (lost job, breakup, death), sadness (crying, depressed, hopeless), frustration (can\'t do this, giving up, hate), worry (anxious, scared, terrified), anger (furious, pissed off), sad emojis (😢😭💔😞), words like terrible/awful/worst/horrible.\n\nNeutral should only be for truly mundane observations without emotional weight. Examples: "I passed my driving test!" = positive, "I failed my exam" = negative, "I went to the store" = neutral. Respond with ONLY the single word classification.'
           },
           {
             role: 'user',
@@ -57,7 +57,35 @@ Deno.serve(async (req) => {
 
     // Validate sentiment
     const validSentiments = ['positive', 'neutral', 'negative'];
-    const finalSentiment = validSentiments.includes(sentiment) ? sentiment : 'neutral';
+    let finalSentiment = validSentiments.includes(sentiment) ? sentiment : 'neutral';
+
+    // Apply heuristics to override neutral if strong indicators present
+    const text = String(content);
+    const lowered = text.toLowerCase();
+    
+    // Negative indicators
+    const negativeWords = ['fail', 'failed', 'failure', 'reject', 'rejected', 'fired', 'lost', 'loss', 'death', 'died', 'cry', 'crying', 'depressed', 'depression', 'hopeless', 'hate', 'hated', 'terrible', 'awful', 'worst', 'horrible', 'anxious', 'anxiety', 'scared', 'terrified', 'fear', 'furious', 'angry', 'pissed', 'upset', 'sad', 'miserable', 'devastated', 'heartbroken', 'disappointed', 'frustrating', 'frustrated', 'giving up', 'can\'t do', 'impossible', 'never work'];
+    const negativeEmojis = /[😢😭💔😞😔😟😣😖😫😩😤😠😡🤬😰😨😱🥺😥😓]/;
+    const failurePatterns = [
+      /(failed|didn't pass|did not pass|flunked).*(test|exam|class|course|quiz|assignment|interview)/i,
+      /(got|was|been).*(rejected|fired|laid off|dumped|denied)/i,
+      /(lost|losing).*(job|relationship|loved one|someone|everything)/i,
+      /(can't|cannot|couldn't|won't).*(do|handle|take|bear)/i,
+    ];
+
+    const hasNegativeIndicators = 
+      negativeEmojis.test(text) ||
+      negativeWords.some(w => lowered.includes(w)) ||
+      failurePatterns.some(re => re.test(text));
+
+    // Positive indicators (to avoid false negatives)
+    const positiveWords = ['yay','woohoo','hooray','congrats','success','awesome','great','amazing','passed','won','happy','excited'];
+    const positiveEmojis = /[🎉✨🥳😊😁😄🙂👍❤️💯👏]/;
+    const hasPositiveIndicators = positiveEmojis.test(text) || positiveWords.some(w => lowered.includes(w));
+
+    if (finalSentiment === 'neutral' && hasNegativeIndicators && !hasPositiveIndicators) {
+      finalSentiment = 'negative';
+    }
 
     return new Response(
       JSON.stringify({ sentiment: finalSentiment }),
