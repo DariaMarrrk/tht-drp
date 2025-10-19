@@ -1,4 +1,4 @@
-# ThoughtDrop - Hacktoberfest Tbilisi 2025
+# Etheri - Hacktoberfest Tbilisi 2025
 
 ## Project info
 

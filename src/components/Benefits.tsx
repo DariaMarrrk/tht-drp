@@ -33,7 +33,7 @@ export const Benefits = () => {
     <section id="benefits" className="py-24 px-6 bg-muted/30">
       <div className="container mx-auto">
         <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Why ThoughtDrop?</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">Why Etheri?</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Your thoughts hold the key to understanding what you need. Let AI help you decode them.
           </p>

@@ -86,7 +86,7 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      const email = `${username}@thoughtdrop.app`;
+      const email = `${username}@etheri.app`;
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -129,7 +129,7 @@ export default function Auth() {
     setIsLoading(true);
 
     try {
-      const email = `${username}@thoughtdrop.app`;
+      const email = `${username}@etheri.app`;
       const redirectUrl = `${window.location.origin}/`;
       
       const { error } = await supabase.auth.signUp({

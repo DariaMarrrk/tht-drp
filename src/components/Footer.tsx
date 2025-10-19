@@ -9,10 +9,10 @@ export const Footer = () => {
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-xl">ThoughtDrop</span>
+            <span className="font-bold text-xl">Etheri</span>
           </div>
 
-          <p className="text-sm text-muted-foreground">© 2025 ThoughtDrop. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© 2025 Etheri. All rights reserved.</p>
         </div>
       </div>
     </footer>
