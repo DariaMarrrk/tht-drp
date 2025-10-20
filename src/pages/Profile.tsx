@@ -225,32 +225,18 @@ const Profile = () => {
     if (!confirmed) return;
 
     try {
-      // Delete user's thoughts
-      const { error: thoughtsError } = await supabase
-        .from("thoughts")
-        .delete()
-        .eq("user_id", user.id);
+      // Call the delete_user function which will cascade delete everything
+      const { error } = await supabase.rpc("delete_user" as any);
 
-      if (thoughtsError) throw thoughtsError;
-
-      // Delete user's profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", user.id);
-
-      if (profileError) throw profileError;
-
-      // Delete user account
-      const { error: deleteError } = await supabase.rpc("delete_user");
-
-      if (deleteError) throw deleteError;
+      if (error) throw error;
 
       toast({
         title: "Account deleted",
         description: "Your account has been permanently deleted.",
       });
 
+      // Sign out and redirect
+      await supabase.auth.signOut();
       navigate("/auth");
     } catch (error: any) {
       toast({
