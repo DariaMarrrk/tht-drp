@@ -12,8 +12,5 @@ verify_jwt = false
 [functions.generate-weekend-suggestions]
 verify_jwt = false
 
-[functions.cleanup-users]
-verify_jwt = false
-
 [functions.delete-admin]
 verify_jwt = false
