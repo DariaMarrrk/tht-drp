@@ -664,8 +664,10 @@ export const ThoughtsConstellation = () => {
               // Pixel position of the circle center
               const baseLeft = offsetX + thought.x * scale;
               const baseTop = offsetY + thought.y * scale;
+              const rPx = (thought.size / 2) * scale; // radius in pixels
+              let anchorTop = baseTop - rPx; // start anchored to circle top edge
 
-              // Default placement: above and centered
+              // Default placement: above and centered relative to anchor
               let transformX = "-50%";
               let transformY = "calc(-100% - 12px)";
               let leftAdjustPx = 0;
@@ -680,12 +682,17 @@ export const ThoughtsConstellation = () => {
                 leftAdjustPx = -12;
               }
 
-              const verticalBuffer = 110; // tooltip height approximation
-              if (baseTop < verticalBuffer) {
+              const verticalBuffer = 120; // ~tooltip height
+              const spaceAbove = anchorTop; // distance from top to circle top
+              const spaceBelow = ch - (baseTop + rPx); // from circle bottom to container bottom
+
+              if (spaceAbove < verticalBuffer && spaceBelow > spaceAbove) {
                 // Not enough space above → place below
-                transformY = "calc(100% + 12px)";
-              } else if (ch - baseTop < verticalBuffer) {
-                // Too close to bottom → keep above
+                anchorTop = baseTop + rPx;
+                transformY = "12px";
+              } else {
+                // Keep above
+                anchorTop = baseTop - rPx;
                 transformY = "calc(-100% - 12px)";
               }
 
@@ -694,7 +701,7 @@ export const ThoughtsConstellation = () => {
                   className="absolute bg-card/95 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-4 max-w-xs shadow-glow pointer-events-none z-50"
                   style={{
                     left: `${baseLeft + leftAdjustPx}px`,
-                    top: `${baseTop}px`,
+                    top: `${anchorTop}px`,
                     transform: `translate(${transformX}, ${transformY})`,
                     transition: "none",
                     maxWidth: "260px",
