@@ -93,7 +93,7 @@ export const Navbar = () => {
                 filter: `drop-shadow(0 0 12px hsl(${themeColors.primary})) drop-shadow(0 0 4px rgba(255,255,255,1)) drop-shadow(0 2px 6px hsl(${themeColors.secondary} / 0.5))`,
               }}
             />
-            <span className="font-bold text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+            <span className="font-cursive font-bold text-2xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
               Etheri
             </span>
           </Link>
