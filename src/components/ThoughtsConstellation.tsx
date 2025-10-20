@@ -409,7 +409,7 @@ export const ThoughtsConstellation = () => {
 
   return (
     <section 
-      className="pt-24 pb-8 px-6 relative overflow-hidden min-h-screen flex items-center"
+      className="pt-20 pb-8 px-6 relative overflow-hidden min-h-screen flex items-center"
       style={{
         backgroundImage: `url(${getBackgroundImage()})`,
         backgroundSize: 'cover',
@@ -615,7 +615,7 @@ export const ThoughtsConstellation = () => {
         </div>
 
         {/* Bottom description */}
-        <p className="text-center mt-5 text-white/50 text-xs">
+        <p className="text-center mt-3 text-white/50 text-xs">
           Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
 
