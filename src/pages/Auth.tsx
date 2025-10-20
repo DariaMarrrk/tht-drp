@@ -190,7 +190,14 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-soft">
       <Card className="w-full max-w-md p-8 bg-card/95 backdrop-blur-sm border-2">
         <div className="text-center mb-8">
-          <img src={authLogo} alt="Etheri logo" className="w-16 h-16 mx-auto mb-4" />
+          <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <img 
+              src={authLogo} 
+              alt="Etheri logo" 
+              className="w-full h-full object-contain"
+              style={{ filter: 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(240deg) brightness(118%) contrast(119%)' }}
+            />
+          </div>
           <h1 className="text-3xl font-bold mb-2">Etheri</h1>
           <p className="text-muted-foreground">
             {mode === "initial" && "Let's get started"}
