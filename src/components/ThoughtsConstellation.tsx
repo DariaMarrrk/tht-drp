@@ -596,20 +596,27 @@ export const ThoughtsConstellation = () => {
               let transformY = "calc(-100% - 12px)"; // Default: above circle
               let leftAdjust = 0;
               
-              // Check if too far left (would overflow)
-              if (xPercent < 20) {
+              // More aggressive boundary checks for horizontal positioning
+              // Check if too far left (would overflow) - increased threshold
+              if (xPercent < 25) {
                 transformX = "0%"; // Align to left edge of tooltip
-                leftAdjust = 10; // Add small offset from edge
+                leftAdjust = 15; // Add buffer from edge
               }
-              // Check if too far right (would overflow)
-              else if (xPercent > 80) {
+              // Check if too far right (would overflow) - increased threshold
+              else if (xPercent > 75) {
                 transformX = "-100%"; // Align to right edge of tooltip
-                leftAdjust = -10; // Add small offset from edge
+                leftAdjust = -15; // Add buffer from edge
               }
               
-              // Check if too far up (tooltip would go off top)
-              if (yPercent < 15) {
+              // More aggressive check for top positioning - increased threshold significantly
+              // Tooltip needs more space at top to fit content
+              if (yPercent < 30) {
                 transformY = "calc(100% + 12px)"; // Position below circle instead
+              }
+              
+              // Additional bottom check - if near bottom, force above positioning
+              if (yPercent > 85) {
+                transformY = "calc(-100% - 12px)"; // Force above
               }
               
               return (
@@ -620,7 +627,7 @@ export const ThoughtsConstellation = () => {
                     top: `${yPercent}%`,
                     transform: `translate(${transformX}, ${transformY})`,
                     transition: "none",
-                    maxWidth: "280px",
+                    maxWidth: "260px", // Slightly smaller to fit better
                   }}
                 >
                   <p className="text-sm text-foreground leading-snug">
