@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Calendar, RefreshCw, Heart, Users, Palette, Zap, Brain, Mountain, Bell } from "lucide-react";
@@ -74,6 +74,7 @@ export const ThoughtsConstellation = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { imageryTheme } = useUserTheme();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleGetSuggestions = async () => {
     if (thoughts.length === 0) {
@@ -485,7 +486,7 @@ export const ThoughtsConstellation = () => {
             </Button>
           </div>
 
-          <div className="relative w-full overflow-visible" style={{ height: "400px" }}>
+          <div ref={containerRef} className="relative w-full overflow-visible" style={{ height: "400px" }}>
             {isLoading ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <p className="text-white/70">Loading your thoughts...</p>
@@ -582,52 +583,63 @@ export const ThoughtsConstellation = () => {
             </>
             )}
 
-            {/* Tooltip with smart positioning */}
+            {/* Tooltip with smart positioning anchored to circle */}
             {hoveredThought && (() => {
               const thought = thoughts.find(t => t.id === hoveredThought);
               if (!thought) return null;
-              
-              // Convert SVG coordinates (900x600) to percentage
-              const xPercent = (thought.x / 900) * 100;
-              const yPercent = (thought.y / 600) * 100;
-              
-              // Determine tooltip position to keep it within bounds
-              let transformX = "-50%"; // Default: center horizontally
-              let transformY = "calc(-100% - 12px)"; // Default: above circle
-              let leftAdjust = 0;
-              
-              // More aggressive boundary checks for horizontal positioning
-              // Check if too far left (would overflow) - increased threshold
-              if (xPercent < 25) {
-                transformX = "0%"; // Align to left edge of tooltip
-                leftAdjust = 15; // Add buffer from edge
+
+              const container = containerRef.current;
+              const cw = container?.clientWidth ?? 0;
+              const ch = container?.clientHeight ?? 0;
+
+              // SVG viewBox size
+              const vbW = 900;
+              const vbH = 600;
+
+              // Compute uniform scale and letterbox offsets used by preserveAspectRatio="xMidYMid meet"
+              const scale = Math.min(cw / vbW, ch / vbH) || 0;
+              const renderedW = vbW * scale;
+              const renderedH = vbH * scale;
+              const offsetX = (cw - renderedW) / 2;
+              const offsetY = (ch - renderedH) / 2;
+
+              // Pixel position of the circle center
+              const baseLeft = offsetX + thought.x * scale;
+              const baseTop = offsetY + thought.y * scale;
+
+              // Default placement: above and centered
+              let transformX = "-50%";
+              let transformY = "calc(-100% - 12px)";
+              let leftAdjustPx = 0;
+
+              // Edge-aware adjustments using pixel thresholds
+              const edgeBuffer = 140; // half tooltip width approximation
+              if (baseLeft < edgeBuffer) {
+                transformX = "0%";
+                leftAdjustPx = 12;
+              } else if (cw - baseLeft < edgeBuffer) {
+                transformX = "-100%";
+                leftAdjustPx = -12;
               }
-              // Check if too far right (would overflow) - increased threshold
-              else if (xPercent > 75) {
-                transformX = "-100%"; // Align to right edge of tooltip
-                leftAdjust = -15; // Add buffer from edge
+
+              const verticalBuffer = 110; // tooltip height approximation
+              if (baseTop < verticalBuffer) {
+                // Not enough space above → place below
+                transformY = "calc(100% + 12px)";
+              } else if (ch - baseTop < verticalBuffer) {
+                // Too close to bottom → keep above
+                transformY = "calc(-100% - 12px)";
               }
-              
-              // More aggressive check for top positioning - increased threshold significantly
-              // Tooltip needs more space at top to fit content
-              if (yPercent < 30) {
-                transformY = "calc(100% + 12px)"; // Position below circle instead
-              }
-              
-              // Additional bottom check - if near bottom, force above positioning
-              if (yPercent > 85) {
-                transformY = "calc(-100% - 12px)"; // Force above
-              }
-              
+
               return (
                 <div
                   className="absolute bg-card/95 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-4 max-w-xs shadow-glow pointer-events-none z-50"
                   style={{
-                    left: `calc(${xPercent}% + ${leftAdjust}px)`,
-                    top: `${yPercent}%`,
+                    left: `${baseLeft + leftAdjustPx}px`,
+                    top: `${baseTop}px`,
                     transform: `translate(${transformX}, ${transformY})`,
                     transition: "none",
-                    maxWidth: "260px", // Slightly smaller to fit better
+                    maxWidth: "260px",
                   }}
                 >
                   <p className="text-sm text-foreground leading-snug">
