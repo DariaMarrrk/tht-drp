@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Upload, User } from "lucide-react";
+import { LogOut, Upload, User, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -215,6 +215,52 @@ const Profile = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone and will permanently delete all your data."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      // Delete user's thoughts
+      const { error: thoughtsError } = await supabase
+        .from("thoughts")
+        .delete()
+        .eq("user_id", user.id);
+
+      if (thoughtsError) throw thoughtsError;
+
+      // Delete user's profile
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", user.id);
+
+      if (profileError) throw profileError;
+
+      // Delete user account
+      const { error: deleteError } = await supabase.rpc("delete_user");
+
+      if (deleteError) throw deleteError;
+
+      toast({
+        title: "Account deleted",
+        description: "Your account has been permanently deleted.",
+      });
+
+      navigate("/auth");
+    } catch (error: any) {
+      toast({
+        title: "Error deleting account",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen py-24 px-6">
       <div className="container mx-auto max-w-2xl">
@@ -323,10 +369,21 @@ const Profile = () => {
 
           {/* Sign Out */}
           <Card className="p-6">
-            <Button onClick={handleLogout} variant="destructive" className="w-full" size="lg">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="space-y-3">
+              <Button onClick={handleLogout} variant="destructive" className="w-full" size="lg">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+              <Button
+                onClick={handleDeleteAccount}
+                variant="outline"
+                className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                size="lg"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Account
+              </Button>
+            </div>
           </Card>
         </div>
       </div>
