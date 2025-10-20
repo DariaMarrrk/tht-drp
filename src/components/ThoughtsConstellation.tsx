@@ -464,7 +464,7 @@ export const ThoughtsConstellation = () => {
 
         <Card className="p-4 bg-[hsl(260_35%_10%)]/80 backdrop-blur-sm border-2 border-white/10 animate-fade-in">
           {/* Week Navigation */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 bg-transparent">
             <Button
               variant="outline"
               size="sm"
@@ -485,7 +485,7 @@ export const ThoughtsConstellation = () => {
             </Button>
           </div>
 
-          <div className="relative w-full overflow-hidden" style={{ height: "400px" }}>
+          <div className="relative w-full overflow-visible" style={{ height: "400px" }}>
             {isLoading ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <p className="text-white/70">Loading your thoughts...</p>
