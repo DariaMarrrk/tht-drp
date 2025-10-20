@@ -457,7 +457,7 @@ export const ThoughtsConstellation = () => {
             </Button>
           </div>
 
-          <div className="relative w-full" style={{ height: "280px" }}>
+          <div className="relative w-full" style={{ height: "400px" }}>
             {isLoading ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <p className="text-white/70">Loading your thoughts...</p>
@@ -572,8 +572,8 @@ export const ThoughtsConstellation = () => {
             )}
           </div>
 
-          {/* Legend */}
-          <div className="mt-3 flex flex-wrap gap-3 justify-center items-center text-xs">
+          {/* Legend - moved to bottom of card */}
+          <div className="mt-4 flex flex-wrap gap-3 justify-center items-center text-xs border-t border-white/10 pt-4">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getSentimentColor("positive") }} />
               <span className="text-white/80">Positive thoughts</span>
@@ -592,6 +592,7 @@ export const ThoughtsConstellation = () => {
           </div>
         </Card>
 
+        {/* Buttons - moved outside card */}
         <div className="flex flex-wrap justify-center gap-3 mt-4">
           <Button
             onClick={handleReanalyzThoughts}
@@ -613,6 +614,7 @@ export const ThoughtsConstellation = () => {
           </Button>
         </div>
 
+        {/* Bottom description */}
         <p className="text-center mt-3 text-white/50 text-xs">
           Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
