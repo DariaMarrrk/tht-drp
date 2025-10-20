@@ -457,7 +457,7 @@ export const ThoughtsConstellation = () => {
             </Button>
           </div>
 
-          <div className="relative w-full" style={{ height: "400px" }}>
+          <div className="relative w-full overflow-hidden" style={{ height: "400px" }}>
             {isLoading ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <p className="text-white/70">Loading your thoughts...</p>
@@ -554,22 +554,53 @@ export const ThoughtsConstellation = () => {
             </>
             )}
 
-            {/* Tooltip */}
-            {hoveredThought && (
-              <div
-                className="absolute bg-card/95 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-4 max-w-xs shadow-glow pointer-events-none z-50"
-                style={{
-                  left: `${(thoughts.find(t => t.id === hoveredThought)?.x || 0) / 9}%`,
-                  top: `${(thoughts.find(t => t.id === hoveredThought)?.y || 0) / 6}%`,
-                  transform: "translate(-50%, calc(-100% - 10px))",
-                  transition: "none",
-                }}
-              >
-                <p className="text-sm text-foreground">
-                  {thoughts.find(t => t.id === hoveredThought)?.content}
-                </p>
-              </div>
-            )}
+            {/* Tooltip with smart positioning */}
+            {hoveredThought && (() => {
+              const thought = thoughts.find(t => t.id === hoveredThought);
+              if (!thought) return null;
+              
+              // Convert SVG coordinates (900x600) to percentage
+              const xPercent = (thought.x / 900) * 100;
+              const yPercent = (thought.y / 600) * 100;
+              
+              // Determine tooltip position to keep it within bounds
+              let transformX = "-50%"; // Default: center horizontally
+              let transformY = "calc(-100% - 12px)"; // Default: above circle
+              let leftAdjust = 0;
+              
+              // Check if too far left (would overflow)
+              if (xPercent < 20) {
+                transformX = "0%"; // Align to left edge of tooltip
+                leftAdjust = 10; // Add small offset from edge
+              }
+              // Check if too far right (would overflow)
+              else if (xPercent > 80) {
+                transformX = "-100%"; // Align to right edge of tooltip
+                leftAdjust = -10; // Add small offset from edge
+              }
+              
+              // Check if too far up (tooltip would go off top)
+              if (yPercent < 15) {
+                transformY = "calc(100% + 12px)"; // Position below circle instead
+              }
+              
+              return (
+                <div
+                  className="absolute bg-card/95 backdrop-blur-sm border-2 border-primary/50 rounded-lg p-4 max-w-xs shadow-glow pointer-events-none z-50"
+                  style={{
+                    left: `calc(${xPercent}% + ${leftAdjust}px)`,
+                    top: `${yPercent}%`,
+                    transform: `translate(${transformX}, ${transformY})`,
+                    transition: "none",
+                    maxWidth: "280px",
+                  }}
+                >
+                  <p className="text-sm text-foreground leading-snug">
+                    {thought.content}
+                  </p>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Legend - moved to bottom of card */}
