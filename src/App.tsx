@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { useUserTheme } from "@/hooks/useUserTheme";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import MyWeek from "./pages/MyWeek";
@@ -16,6 +17,8 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  useUserTheme();
+  
   return (
     <>
       <Navbar />
