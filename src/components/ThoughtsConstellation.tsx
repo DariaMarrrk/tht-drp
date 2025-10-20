@@ -253,8 +253,69 @@ export const ThoughtsConstellation = () => {
         negative: { baseX: 700, baseY: 200, maxRadius: 150 },
       };
 
-      // Transform thoughts with improved clustering
+      // Transform thoughts with improved clustering and collision avoidance
       const positionedThoughts: Thought[] = [];
+      
+      // Helper function to check if two circles overlap
+      const checkCollision = (x1: number, y1: number, r1: number, x2: number, y2: number, r2: number): boolean => {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const minDistance = r1 + r2 + 5; // Add 5px buffer between circles
+        return distance < minDistance;
+      };
+
+      // Helper function to find a non-overlapping position
+      const findNonOverlappingPosition = (
+        baseX: number,
+        baseY: number,
+        radius: number,
+        referenceX?: number,
+        referenceY?: number,
+        maxDistance?: number
+      ): { x: number; y: number } => {
+        const maxAttempts = 50;
+        
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          let testX: number, testY: number;
+          
+          if (referenceX !== undefined && referenceY !== undefined && maxDistance) {
+            // Try positioning near a reference point (for similar thoughts)
+            const angle = (Math.random() * Math.PI * 2);
+            const distance = 60 + Math.random() * (maxDistance - 60);
+            testX = referenceX + Math.cos(angle) * distance;
+            testY = referenceY + Math.sin(angle) * distance;
+          } else {
+            // Random position within sentiment cluster
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * (maxDistance || 150);
+            testX = baseX + Math.cos(angle) * distance;
+            testY = baseY + Math.sin(angle) * distance;
+          }
+          
+          // Clamp to viewBox bounds
+          testX = Math.max(radius, Math.min(900 - radius, testX));
+          testY = Math.max(radius, Math.min(600 - radius, testY));
+          
+          // Check for collisions with existing circles
+          let hasCollision = false;
+          for (const existing of positionedThoughts) {
+            if (checkCollision(testX, testY, radius, existing.x, existing.y, existing.size / 2)) {
+              hasCollision = true;
+              break;
+            }
+          }
+          
+          if (!hasCollision) {
+            return { x: testX, y: testY };
+          }
+        }
+        
+        // Fallback: return clamped position even if there's overlap
+        const testX = Math.max(radius, Math.min(900 - radius, baseX));
+        const testY = Math.max(radius, Math.min(600 - radius, baseY));
+        return { x: testX, y: testY };
+      };
       
       thoughtsWithKeywords.forEach((thought, index) => {
         const contentLength = thought.content.length;
@@ -265,9 +326,10 @@ export const ThoughtsConstellation = () => {
         const size = Math.max(Math.min(24 + lenScore + emphScore, 100), 24);
         
         const sentimentPos = sentimentPositions[thought.sentiment];
+        const radius = size / 2;
         
         // Find similar thoughts to cluster with
-        let positionOffset = { x: 0, y: 0 };
+        let referenceThought: Thought | undefined;
         let maxSimilarity = 0;
         
         thoughtsWithKeywords.slice(0, index).forEach((otherThought, otherIndex) => {
@@ -275,47 +337,43 @@ export const ThoughtsConstellation = () => {
             const similarity = calculateSimilarity(thought.keywords, otherThought.keywords);
             if (similarity > maxSimilarity && similarity > 0.15) {
               maxSimilarity = similarity;
-              // Get position of similar thought (if already positioned)
-              const existingThought = positionedThoughts[otherIndex];
-              if (existingThought) {
-                // Position near similar thought
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 60 + Math.random() * 40;
-                positionOffset = {
-                  x: existingThought.x + Math.cos(angle) * distance - sentimentPos.baseX,
-                  y: existingThought.y + Math.sin(angle) * distance - sentimentPos.baseY,
-                };
-              }
+              referenceThought = positionedThoughts[otherIndex];
             }
           }
         });
         
-        // If no similar thought found, position randomly within sentiment cluster
-        if (maxSimilarity === 0) {
-          const angle = Math.random() * Math.PI * 2;
-          const distance = Math.random() * sentimentPos.maxRadius;
-          positionOffset = {
-            x: Math.cos(angle) * distance,
-            y: Math.sin(angle) * distance,
-          };
+        // Find non-overlapping position
+        let position: { x: number; y: number };
+        
+        if (referenceThought && maxSimilarity > 0) {
+          // Position near similar thought
+          position = findNonOverlappingPosition(
+            sentimentPos.baseX,
+            sentimentPos.baseY,
+            radius,
+            referenceThought.x,
+            referenceThought.y,
+            100
+          );
+        } else {
+          // Position randomly within sentiment cluster
+          position = findNonOverlappingPosition(
+            sentimentPos.baseX,
+            sentimentPos.baseY,
+            radius,
+            undefined,
+            undefined,
+            sentimentPos.maxRadius
+          );
         }
-        
-        // Calculate position and clamp to keep circles within bounds
-        const radius = size / 2;
-        const rawX = sentimentPos.baseX + positionOffset.x;
-        const rawY = sentimentPos.baseY + positionOffset.y;
-        
-        // Clamp positions to keep circles fully visible within 900x600 viewBox
-        const clampedX = Math.max(radius, Math.min(900 - radius, rawX));
-        const clampedY = Math.max(radius, Math.min(600 - radius, rawY));
         
         positionedThoughts.push({
           id: thought.id,
           content: thought.content,
           sentiment: thought.sentiment,
           created_at: thought.created_at,
-          x: clampedX,
-          y: clampedY,
+          x: position.x,
+          y: position.y,
           size,
         });
       });
