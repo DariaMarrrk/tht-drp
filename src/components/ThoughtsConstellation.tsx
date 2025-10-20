@@ -409,7 +409,7 @@ export const ThoughtsConstellation = () => {
 
   return (
     <section 
-      className="py-8 px-6 relative overflow-hidden min-h-screen flex items-center"
+      className="pt-24 pb-8 px-6 relative overflow-hidden min-h-screen flex items-center"
       style={{
         backgroundImage: `url(${getBackgroundImage()})`,
         backgroundSize: 'cover',
@@ -425,7 +425,7 @@ export const ThoughtsConstellation = () => {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
       
       <div className="container mx-auto relative z-10">
-        <div className="text-center mb-4 animate-fade-in">
+        <div className="text-center mb-6 animate-fade-in">
           <div className="flex items-center justify-center gap-2 mb-1">
             <Sparkles className="w-5 h-5 text-primary" />
             <h2 className="text-2xl md:text-3xl font-bold text-white">
@@ -593,20 +593,20 @@ export const ThoughtsConstellation = () => {
         </Card>
 
         {/* Buttons - moved outside card */}
-        <div className="flex flex-wrap justify-center gap-3 mt-4">
+        <div className="flex flex-wrap justify-center gap-4 mt-6">
           <Button
             onClick={handleReanalyzThoughts}
-            size="default"
+            size="lg"
             variant="outline"
-            className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 hover:bg-primary/10 text-sm px-4 py-2"
+            className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 hover:bg-primary/10"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Re-analyze All Thoughts
           </Button>
           <Button
             onClick={handleGetSuggestions}
-            size="default"
-            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow text-sm px-4 py-2"
+            size="lg"
+            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow"
             disabled={isGeneratingSuggestions || thoughts.length === 0}
           >
             <Calendar className="w-4 h-4 mr-2" />
@@ -615,7 +615,7 @@ export const ThoughtsConstellation = () => {
         </div>
 
         {/* Bottom description */}
-        <p className="text-center mt-3 text-white/50 text-xs">
+        <p className="text-center mt-5 text-white/50 text-xs">
           Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
 
