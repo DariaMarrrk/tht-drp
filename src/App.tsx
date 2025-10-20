@@ -17,12 +17,14 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  useUserTheme();
+  const { imageryTheme } = useUserTheme();
   
   return (
     <>
       <Navbar />
-      {children}
+      <div data-imagery-theme={imageryTheme}>
+        {children}
+      </div>
       <Footer />
     </>
   );

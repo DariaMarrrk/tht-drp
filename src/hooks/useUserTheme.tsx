@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,20 +13,22 @@ const themes = [
 
 export const useUserTheme = () => {
   const { user } = useAuth();
+  const [imageryTheme, setImageryTheme] = useState<string>("space");
 
   useEffect(() => {
-    const loadAndApplyTheme = async () => {
+    const loadAndApplyThemes = async () => {
       if (!user) return;
 
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("theme")
+          .select("theme, imagery_theme")
           .eq("id", user.id)
           .single();
 
         if (error) throw error;
 
+        // Apply color theme
         if (data?.theme) {
           const savedTheme = themes.find((t) => t.name === data.theme);
           if (savedTheme) {
@@ -36,11 +38,18 @@ export const useUserTheme = () => {
             root.style.setProperty("--accent", savedTheme.colors.accent);
           }
         }
+
+        // Set imagery theme
+        if (data?.imagery_theme) {
+          setImageryTheme(data.imagery_theme);
+        }
       } catch (error) {
-        console.error("Error loading theme:", error);
+        console.error("Error loading themes:", error);
       }
     };
 
-    loadAndApplyTheme();
+    loadAndApplyThemes();
   }, [user]);
+
+  return { imageryTheme };
 };

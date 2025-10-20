@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { CrisisDialog } from "@/components/CrisisDialog";
+import { useUserTheme } from "@/hooks/useUserTheme";
 import themeSpace from "@/assets/theme-space.jpg";
 import themeForest from "@/assets/theme-forest.jpg";
 import themeOcean from "@/assets/theme-ocean.jpg";
@@ -66,13 +67,13 @@ export const ThoughtsConstellation = () => {
   const [hoveredThought, setHoveredThought] = useState<string | null>(null);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [imageryTheme, setImageryTheme] = useState("space");
   const [suggestions, setSuggestions] = useState<SuggestionsData | null>(null);
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0); // 0 = current week, -1 = last week, etc.
   const [showCrisisDialog, setShowCrisisDialog] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { imageryTheme } = useUserTheme();
 
   const handleGetSuggestions = async () => {
     if (thoughts.length === 0) {
@@ -157,26 +158,8 @@ export const ThoughtsConstellation = () => {
   useEffect(() => {
     if (user) {
       loadThoughts();
-      loadImageryTheme();
     }
   }, [user, weekOffset]);
-
-  const loadImageryTheme = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("imagery_theme")
-        .eq("id", user?.id)
-        .single();
-
-      if (error) throw error;
-      if (data?.imagery_theme) {
-        setImageryTheme(data.imagery_theme);
-      }
-    } catch (error) {
-      console.error("Error loading imagery theme:", error);
-    }
-  };
 
   const loadThoughts = async () => {
     try {
