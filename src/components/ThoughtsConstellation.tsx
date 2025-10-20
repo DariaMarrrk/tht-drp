@@ -409,7 +409,7 @@ export const ThoughtsConstellation = () => {
 
   return (
     <section 
-      className="py-12 px-6 relative overflow-hidden min-h-screen flex items-center"
+      className="py-8 px-6 relative overflow-hidden min-h-screen flex items-center"
       style={{
         backgroundImage: `url(${getBackgroundImage()})`,
         backgroundSize: 'cover',
@@ -425,39 +425,39 @@ export const ThoughtsConstellation = () => {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
       
       <div className="container mx-auto relative z-10">
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <Sparkles className="w-6 h-6 text-primary" />
-            <h2 className="text-3xl md:text-4xl font-bold text-white">
+        <div className="text-center mb-4 animate-fade-in">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
               My Thoughts {getWeekLabel()}
             </h2>
           </div>
         </div>
 
-        <Card className="p-6 bg-[hsl(260_35%_10%)]/80 backdrop-blur-sm border-2 border-white/10 animate-fade-in">
+        <Card className="p-4 bg-[hsl(260_35%_10%)]/80 backdrop-blur-sm border-2 border-white/10 animate-fade-in">
           {/* Week Navigation */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-3">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setWeekOffset(weekOffset - 1)}
-              className="bg-card/50 backdrop-blur-sm border-primary/50 hover:bg-primary/10 text-white"
+              className="bg-card/50 backdrop-blur-sm border-primary/50 hover:bg-primary/10 text-white text-xs px-3 py-1"
             >
               ← Previous Week
             </Button>
-            <span className="text-white/80 font-medium">{getWeekLabel()}</span>
+            <span className="text-white/80 font-medium text-sm">{getWeekLabel()}</span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setWeekOffset(weekOffset + 1)}
               disabled={weekOffset === 0}
-              className="bg-card/50 backdrop-blur-sm border-primary/50 hover:bg-primary/10 text-white disabled:opacity-50"
+              className="bg-card/50 backdrop-blur-sm border-primary/50 hover:bg-primary/10 text-white disabled:opacity-50 text-xs px-3 py-1"
             >
               Next Week →
             </Button>
           </div>
 
-          <div className="relative w-full" style={{ height: "400px" }}>
+          <div className="relative w-full" style={{ height: "280px" }}>
             {isLoading ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <p className="text-white/70">Loading your thoughts...</p>
@@ -573,47 +573,47 @@ export const ThoughtsConstellation = () => {
           </div>
 
           {/* Legend */}
-          <div className="mt-6 flex flex-wrap gap-4 justify-center items-center text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: getSentimentColor("positive") }} />
+          <div className="mt-3 flex flex-wrap gap-3 justify-center items-center text-xs">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getSentimentColor("positive") }} />
               <span className="text-white/80">Positive thoughts</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: getSentimentColor("neutral") }} />
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getSentimentColor("neutral") }} />
               <span className="text-white/80">Neutral thoughts</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: getSentimentColor("negative") }} />
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getSentimentColor("negative") }} />
               <span className="text-white/80">Challenging thoughts</span>
             </div>
-            <div className="text-white/60 ml-4">
+            <div className="text-white/60 ml-2">
               • Bigger circles = longer or more passionate thoughts
             </div>
           </div>
         </Card>
 
-        <div className="flex flex-wrap justify-center gap-4 mt-6">
+        <div className="flex flex-wrap justify-center gap-3 mt-4">
           <Button
             onClick={handleReanalyzThoughts}
-            size="lg"
+            size="default"
             variant="outline"
-            className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 hover:bg-primary/10"
+            className="bg-card/50 backdrop-blur-sm border-2 border-primary/50 hover:bg-primary/10 text-sm px-4 py-2"
           >
-            <RefreshCw className="w-5 h-5 mr-2" />
+            <RefreshCw className="w-4 h-4 mr-2" />
             Re-analyze All Thoughts
           </Button>
           <Button
             onClick={handleGetSuggestions}
-            size="lg"
-            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow"
+            size="default"
+            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-glow text-sm px-4 py-2"
             disabled={isGeneratingSuggestions || thoughts.length === 0}
           >
-            <Calendar className="w-5 h-5 mr-2" />
+            <Calendar className="w-4 h-4 mr-2" />
             {isGeneratingSuggestions ? "Generating..." : "Get Weekend Suggestions"}
           </Button>
         </div>
 
-        <p className="text-center mt-6 text-white/50 text-sm">
+        <p className="text-center mt-3 text-white/50 text-xs">
           Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
 
