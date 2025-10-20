@@ -14,7 +14,7 @@ const usernameSchema = z.string().min(3, "Username must be at least 3 characters
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
 
 export default function Auth() {
-  const [mode, setMode] = useState<"initial" | "login-username" | "login-password" | "signup">("initial");
+  const [mode, setMode] = useState<"initial" | "login-username" | "login-password" | "signup-username" | "signup-password">("initial");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -50,11 +50,65 @@ export default function Auth() {
       if (error) throw error;
 
       if (data) {
-        // Username exists, go to password entry
+        // Username exists, go to password entry for login
         setMode("login-password");
       } else {
-        // Username doesn't exist, offer signup
-        setMode("signup");
+        // Username doesn't exist
+        toast({
+          title: "Username not found",
+          description: "This username doesn't exist. Please check your username or create an account.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCheckSignupUsername = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      usernameSchema.parse(username);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Invalid username",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Check if username exists
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("username", username)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        // Username already exists
+        toast({
+          title: "Username taken",
+          description: "This username is already taken. Please choose another or sign in instead.",
+          variant: "destructive",
+        });
+      } else {
+        // Username is available, go to password entry
+        setMode("signup-password");
       }
     } catch (error: any) {
       toast({
@@ -173,7 +227,8 @@ export default function Auth() {
             {mode === "initial" && "Let's get started"}
             {mode === "login-username" && "Enter your username"}
             {mode === "login-password" && `Welcome back, ${username}!`}
-            {mode === "signup" && "Create your account"}
+            {mode === "signup-username" && "Choose your username"}
+            {mode === "signup-password" && "Create your password"}
           </p>
         </div>
 
@@ -187,7 +242,7 @@ export default function Auth() {
               Sign In
             </Button>
             <Button
-              onClick={() => setMode("signup")}
+              onClick={() => setMode("signup-username")}
               variant="outline"
               className="w-full"
               size="lg"
@@ -263,8 +318,8 @@ export default function Auth() {
           </form>
         )}
 
-        {mode === "signup" && (
-          <form onSubmit={handleSignup} className="space-y-4">
+        {mode === "signup-username" && (
+          <form onSubmit={handleCheckSignupUsername} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="signup-username">Username</Label>
               <Input
@@ -273,17 +328,6 @@ export default function Auth() {
                 placeholder="Choose a username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="signup-password">Password</Label>
-              <Input
-                id="signup-password"
-                type="password"
-                placeholder="Choose a password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
                 autoFocus
               />
@@ -295,13 +339,45 @@ export default function Auth() {
                 onClick={() => {
                   setMode("initial");
                   setUsername("");
+                }}
+                disabled={isLoading}
+              >
+                Back
+              </Button>
+              <Button type="submit" className="flex-1" disabled={isLoading || !username}>
+                Continue
+              </Button>
+            </div>
+          </form>
+        )}
+
+        {mode === "signup-password" && (
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="signup-password">Password</Label>
+              <Input
+                id="signup-password"
+                type="password"
+                placeholder="Choose a password (min 6 characters)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setMode("signup-username");
                   setPassword("");
                 }}
                 disabled={isLoading}
               >
                 Back
               </Button>
-              <Button type="submit" className="flex-1" disabled={isLoading || !username || !password}>
+              <Button type="submit" className="flex-1" disabled={isLoading || !password}>
                 Create Account
               </Button>
             </div>
