@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import authLogo from "@/assets/logo-auth.png";
+import authLogo from "@/assets/logo.svg";
 
 const usernameSchema = z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores");
 
@@ -190,7 +190,7 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-soft">
       <Card className="w-full max-w-md p-8 bg-card/95 backdrop-blur-sm border-2">
         <div className="text-center mb-8">
-          <img src={authLogo} alt="Etheri logo" className="w-16 h-16 rounded-full shadow-sm" />
+          <img src={authLogo} alt="Etheri logo" className="w-16 h-16 mx-auto mb-4" />
           <h1 className="text-3xl font-bold mb-2">Etheri</h1>
           <p className="text-muted-foreground">
             {mode === "initial" && "Let's get started"}
