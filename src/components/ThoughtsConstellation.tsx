@@ -561,7 +561,7 @@ export const ThoughtsConstellation = () => {
                 style={{
                   left: `${(thoughts.find(t => t.id === hoveredThought)?.x || 0) / 9}%`,
                   top: `${(thoughts.find(t => t.id === hoveredThought)?.y || 0) / 6}%`,
-                  transform: "translate(-50%, calc(-100% - 20px))",
+                  transform: "translate(-50%, calc(-100% - 10px))",
                   transition: "none",
                 }}
               >
