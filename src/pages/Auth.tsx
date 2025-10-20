@@ -198,7 +198,7 @@ export default function Auth() {
               style={{ filter: 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(240deg) brightness(118%) contrast(119%)' }}
             />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Etheri</h1>
+          <h1 className="font-cursive text-4xl font-bold mb-2">Etheri</h1>
           <p className="text-muted-foreground">
             {mode === "initial" && "Let's get started"}
             {mode === "login-username" && "Enter your username"}
