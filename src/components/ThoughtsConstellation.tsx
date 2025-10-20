@@ -593,7 +593,7 @@ export const ThoughtsConstellation = () => {
         </Card>
 
         {/* Buttons - moved outside card */}
-        <div className="flex flex-wrap justify-center gap-4 mt-6">
+        <div className="flex flex-wrap justify-center gap-4 mt-4">
           <Button
             onClick={handleReanalyzThoughts}
             size="lg"
