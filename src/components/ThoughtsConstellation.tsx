@@ -352,20 +352,48 @@ export const ThoughtsConstellation = () => {
     }
   };
 
-  // Generate connections between nearby thoughts with same sentiment
+  // Generate connections between thematically related thoughts
   const generateConnections = (): [string, string][] => {
     const connections: [string, string][] = [];
-    const maxDistance = 150; // Maximum distance for connections
+    const maxDistance = 200; // Maximum distance for visual connections
+    const minSimilarity = 0.25; // Minimum keyword overlap to connect (25% shared keywords)
     
-    thoughts.forEach((thought, i) => {
-      thoughts.slice(i + 1).forEach((otherThought) => {
-        // Only connect thoughts with same sentiment
-        if (thought.sentiment === otherThought.sentiment) {
+    // Helper to extract keywords from text
+    const extractKeywords = (text: string): Set<string> => {
+      const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'about', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', 'should', 'now', 'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'am', 'is', 'are', 'was', 'were', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'would', 'could', 'ought']);
+      const words = text.toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
+      return new Set(words.filter(w => !stopWords.has(w)));
+    };
+    
+    // Calculate thematic similarity based on shared keywords
+    const calculateSimilarity = (keywords1: Set<string>, keywords2: Set<string>): number => {
+      const intersection = new Set([...keywords1].filter(x => keywords2.has(x)));
+      const union = new Set([...keywords1, ...keywords2]);
+      return union.size > 0 ? intersection.size / union.size : 0;
+    };
+    
+    // Extract keywords for all thoughts
+    const thoughtsWithKeywords = thoughts.map(thought => ({
+      ...thought,
+      keywords: extractKeywords(thought.content)
+    }));
+    
+    thoughtsWithKeywords.forEach((thought, i) => {
+      thoughtsWithKeywords.slice(i + 1).forEach((otherThought) => {
+        // Must have same sentiment
+        if (thought.sentiment !== otherThought.sentiment) return;
+        
+        // Calculate thematic similarity
+        const similarity = calculateSimilarity(thought.keywords, otherThought.keywords);
+        
+        // Only connect if thematically related (shared keywords)
+        if (similarity >= minSimilarity) {
           const distance = Math.sqrt(
             Math.pow(thought.x - otherThought.x, 2) + 
             Math.pow(thought.y - otherThought.y, 2)
           );
           
+          // Also check distance to keep visualization clean
           if (distance < maxDistance) {
             connections.push([thought.id, otherThought.id]);
           }
