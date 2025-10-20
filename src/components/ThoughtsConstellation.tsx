@@ -409,7 +409,7 @@ export const ThoughtsConstellation = () => {
 
   return (
     <section 
-      className="py-24 px-6 relative overflow-hidden"
+      className="py-12 px-6 relative overflow-hidden min-h-screen flex items-center"
       style={{
         backgroundImage: `url(${getBackgroundImage()})`,
         backgroundSize: 'cover',
@@ -425,16 +425,16 @@ export const ThoughtsConstellation = () => {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/15 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
       
       <div className="container mx-auto relative z-10">
-        <div className="text-center mb-16 animate-fade-in">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Sparkles className="w-6 h-6 text-primary" />
+            <h2 className="text-3xl md:text-4xl font-bold text-white">
               My Thoughts {getWeekLabel()}
             </h2>
           </div>
         </div>
 
-        <Card className="p-8 bg-[hsl(260_35%_10%)]/80 backdrop-blur-sm border-2 border-white/10 animate-fade-in">
+        <Card className="p-6 bg-[hsl(260_35%_10%)]/80 backdrop-blur-sm border-2 border-white/10 animate-fade-in">
           {/* Week Navigation */}
           <div className="flex items-center justify-between mb-6">
             <Button
@@ -457,7 +457,7 @@ export const ThoughtsConstellation = () => {
             </Button>
           </div>
 
-          <div className="relative w-full" style={{ height: "600px" }}>
+          <div className="relative w-full" style={{ height: "400px" }}>
             {isLoading ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <p className="text-white/70">Loading your thoughts...</p>
@@ -573,7 +573,7 @@ export const ThoughtsConstellation = () => {
           </div>
 
           {/* Legend */}
-          <div className="mt-8 flex flex-wrap gap-6 justify-center items-center text-sm">
+          <div className="mt-6 flex flex-wrap gap-4 justify-center items-center text-sm">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: getSentimentColor("positive") }} />
               <span className="text-white/80">Positive thoughts</span>
@@ -592,7 +592,7 @@ export const ThoughtsConstellation = () => {
           </div>
         </Card>
 
-        <div className="flex flex-wrap justify-center gap-4 mt-8">
+        <div className="flex flex-wrap justify-center gap-4 mt-6">
           <Button
             onClick={handleReanalyzThoughts}
             size="lg"
@@ -613,7 +613,7 @@ export const ThoughtsConstellation = () => {
           </Button>
         </div>
 
-        <p className="text-center mt-8 text-white/50 text-sm">
+        <p className="text-center mt-6 text-white/50 text-sm">
           Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
         </p>
 
