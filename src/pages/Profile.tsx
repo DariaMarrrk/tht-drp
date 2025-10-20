@@ -180,6 +180,9 @@ const Profile = () => {
     if (!user) return;
 
     try {
+      // Update locally first to avoid flashes
+      localStorage.setItem('imagery_theme', theme.name.toLowerCase());
+
       const { error } = await supabase
         .from("profiles")
         .update({ imagery_theme: theme.name.toLowerCase() } as any)

@@ -13,7 +13,8 @@ const themes = [
 
 export const useUserTheme = () => {
   const { user } = useAuth();
-  const [imageryTheme, setImageryTheme] = useState<string>("space");
+  const initialImagery = (typeof window !== 'undefined' && localStorage.getItem('imagery_theme')) || 'space';
+  const [imageryTheme, setImageryTheme] = useState<string>(initialImagery);
 
   useEffect(() => {
     const loadAndApplyThemes = async () => {
@@ -42,6 +43,7 @@ export const useUserTheme = () => {
         // Set imagery theme
         if (data?.imagery_theme) {
           setImageryTheme(data.imagery_theme);
+          try { localStorage.setItem('imagery_theme', data.imagery_theme); } catch {}
         }
       } catch (error) {
         console.error("Error loading themes:", error);
