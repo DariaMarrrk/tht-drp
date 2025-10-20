@@ -616,7 +616,7 @@ export const ThoughtsConstellation = () => {
 
         {/* Bottom description */}
         <p className="text-center mt-3 text-white/50 text-xs">
-          Similar thoughts cluster together • Opposing emotions stay separate • Lines connect related thoughts
+          Similar thoughts cluster together  •  Opposing emotions stay separate  •  Lines connect related thoughts
         </p>
 
         {/* Weekend Suggestions Section */}
