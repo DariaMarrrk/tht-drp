@@ -23,7 +23,7 @@ export default function Auth() {
 
   const handleCheckUsername = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       usernameSchema.parse(username);
     } catch (error) {
@@ -37,38 +37,9 @@ export default function Auth() {
       }
     }
 
-    setIsLoading(true);
-
-    try {
-      // Check if username exists
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("username", username)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (data) {
-        // Username exists, go to password entry for login
-        setMode("login-password");
-      } else {
-        // Username doesn't exist
-        toast({
-          title: "Username not found",
-          description: "This username doesn't exist. Please check your username or create an account.",
-          variant: "destructive",
-        });
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // Do not query profiles here — it may not exist for older accounts.
+    // Proceed directly to password entry and let sign-in handle validity.
+    setMode("login-password");
   };
 
   const handleCheckSignupUsername = async (e: React.FormEvent) => {
