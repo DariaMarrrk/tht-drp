@@ -174,7 +174,7 @@ export const ThoughtsConstellation = () => {
       
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 7);
-      weekEnd.setHours(23, 59, 59, 999);
+      weekEnd.setHours(0, 0, 0, 0); // Set to start of next Monday, not end of day
 
       const { data, error } = await supabase
         .from("thoughts")
