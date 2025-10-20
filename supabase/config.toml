@@ -15,8 +15,5 @@ verify_jwt = false
 [functions.cleanup-users]
 verify_jwt = false
 
-[functions.reset-admin-password]
-verify_jwt = false
-
 [functions.delete-admin]
 verify_jwt = false
