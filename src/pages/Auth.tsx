@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { Sparkles } from "lucide-react";
+import authLogo from "@/assets/logo-auth.png";
 
 const usernameSchema = z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be less than 20 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores");
 
@@ -190,14 +190,12 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-soft">
       <Card className="w-full max-w-md p-8 bg-card/95 backdrop-blur-sm border-2">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center mx-auto mb-4">
-            <Sparkles className="w-8 h-8 text-white" />
-          </div>
+          <img src={authLogo} alt="Etheri logo" className="w-16 h-16 rounded-full shadow-sm" />
           <h1 className="text-3xl font-bold mb-2">Etheri</h1>
           <p className="text-muted-foreground">
             {mode === "initial" && "Let's get started"}
             {mode === "login-username" && "Enter your username"}
-            {mode === "login-password" && `Welcome back, ${username}!`}
+            {mode === "login-password" && "Sign in to your account"}
             {mode === "signup-username" && "Choose your username"}
             {mode === "signup-password" && "Create your password"}
           </p>
@@ -206,7 +204,7 @@ export default function Auth() {
         {mode === "initial" && (
           <div className="space-y-4">
             <Button
-              onClick={() => setMode("login-username")}
+              onClick={() => setMode("login-password")}
               className="w-full"
               size="lg"
             >
@@ -259,6 +257,18 @@ export default function Auth() {
         {mode === "login-password" && (
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="login-username">Username</Label>
+              <Input
+                id="login-username"
+                type="text"
+                placeholder="yourusername"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
@@ -267,7 +277,6 @@ export default function Auth() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
-                autoFocus
               />
             </div>
             <div className="flex gap-2">
@@ -275,14 +284,14 @@ export default function Auth() {
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  setMode("login-username");
+                  setMode("initial");
                   setPassword("");
                 }}
                 disabled={isLoading}
               >
                 Back
               </Button>
-              <Button type="submit" className="flex-1" disabled={isLoading || !password}>
+              <Button type="submit" className="flex-1" disabled={isLoading || !username || !password}>
                 Sign In
               </Button>
             </div>
