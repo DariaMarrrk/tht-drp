@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      thought_entities: {
+        Row: {
+          created_at: string | null
+          id: string
+          memory_id: string
+          thought_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          memory_id: string
+          thought_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          memory_id?: string
+          thought_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thought_entities_memory_id_fkey"
+            columns: ["memory_id"]
+            isOneToOne: false
+            referencedRelation: "user_memory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thought_entities_thought_id_fkey"
+            columns: ["thought_id"]
+            isOneToOne: false
+            referencedRelation: "thoughts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       thoughts: {
         Row: {
           content: string
@@ -75,6 +111,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_memory: {
+        Row: {
+          context: Json
+          created_at: string | null
+          entity_name: string
+          first_mentioned_at: string
+          id: string
+          last_mentioned_at: string
+          memory_type: string
+          mention_count: number | null
+          sentiment_distribution: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          context: Json
+          created_at?: string | null
+          entity_name: string
+          first_mentioned_at: string
+          id?: string
+          last_mentioned_at: string
+          memory_type: string
+          mention_count?: number | null
+          sentiment_distribution?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          context?: Json
+          created_at?: string | null
+          entity_name?: string
+          first_mentioned_at?: string
+          id?: string
+          last_mentioned_at?: string
+          memory_type?: string
+          mention_count?: number | null
+          sentiment_distribution?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

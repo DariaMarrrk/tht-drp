@@ -10,8 +10,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { thoughts } = await req.json();
-
+    const { thoughts, userId } = await req.json();
+    
     if (!thoughts || thoughts.length === 0) {
       return new Response(
         JSON.stringify({ 
@@ -25,10 +25,36 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`Generating weekend suggestions based on ${thoughts.length} thoughts...`);
+    console.log('Generating weekend suggestions based on', thoughts.length, 'thoughts...');
+
+    // Get user context if userId is provided
+    let memoryContext: any = null;
+    if (userId) {
+      try {
+        const contextResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/get-user-context`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+          },
+          body: JSON.stringify({ userId }),
+        });
+
+        if (contextResponse.ok) {
+          const contextData = await contextResponse.json();
+          if (contextData.hasMemories) {
+            memoryContext = contextData.context;
+            console.log('Loaded user memory context:', memoryContext.summary);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user context:', error);
+        // Continue without memory context
+      }
+    }
 
     // Prepare thoughts summary for AI
-    const thoughtsSummary = thoughts.map((t: any) => 
+    const thoughtsSummary = thoughts.map((t: any) =>
       `[${t.sentiment}] ${t.content}`
     ).join('\n');
 
@@ -44,7 +70,45 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a thoughtful wellness advisor. Analyze the user's thoughts from their week and suggest 1-15 personalized weekend activities that will help them recharge based on their emotional state and experiences.
+            content: `You are a thoughtful wellness advisor with memory of the user's life context. ${memoryContext ? `
+
+USER MEMORY CONTEXT:
+${memoryContext.summary.textSummary ? `Summary: ${memoryContext.summary.textSummary}` : ''}
+
+${Object.keys(memoryContext.people).length > 0 ? `
+Important People:
+${Object.entries(memoryContext.people).slice(0, 5).map(([name, info]: [string, any]) => 
+  `- ${info.name}: ${info.relationship || 'Unknown relationship'}. Mentioned ${info.mentionCount} times. Last seen ${info.daysSinceLastMention} days ago. Sentiment: ${info.dominantSentiment}. ${info.context}`
+).join('\n')}` : ''}
+
+${Object.keys(memoryContext.goals).length > 0 ? `
+Active Goals:
+${Object.entries(memoryContext.goals).map(([name, info]: [string, any]) => 
+  `- ${info.name}: ${info.context}. First mentioned ${Math.floor((Date.now() - new Date(info.firstMentioned).getTime()) / (1000*60*60*24))} days ago.`
+).join('\n')}` : ''}
+
+${Object.keys(memoryContext.themes).length > 0 ? `
+Recurring Themes:
+${Object.entries(memoryContext.themes).slice(0, 3).map(([name, info]: [string, any]) => 
+  `- ${info.name}: Mentioned ${info.mentionCount} times. ${info.context}`
+).join('\n')}` : ''}
+
+${Object.keys(memoryContext.places).length > 0 ? `
+Familiar Places: ${Object.entries(memoryContext.places).slice(0, 5).map(([_, info]: [string, any]) => info.name).join(', ')}` : ''}
+
+${Object.keys(memoryContext.habits).length > 0 ? `
+Habits: ${Object.entries(memoryContext.habits).map(([_, info]: [string, any]) => info.name).join(', ')}` : ''}
+
+IMPORTANT: Use this context to:
+- Reference specific people by name when suggesting social activities
+- Build on their goals and interests  
+- Address recurring patterns or concerns
+- Suggest reconnecting with people they haven't mentioned lately
+- Include reminders for things they mentioned wanting to do
+- Consider places they frequent or have mentioned positively
+` : 'Note: No historical context available yet for this user.'}
+
+Analyze the user's thoughts from their week and suggest 1-15 personalized weekend activities that will help them recharge based on their emotional state and experiences.
 
 IMPORTANT: The number of suggestions should match the complexity and variety of their week:
 - Simple week with few thoughts: 1-5 suggestions

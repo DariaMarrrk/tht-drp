@@ -60,13 +60,31 @@ export const Hero = () => {
       const sentiment = crisisDetected && aiSentiment === 'neutral' ? 'negative' : aiSentiment;
 
       // 3) Save thought
-      const { error } = await supabase.from("thoughts").insert({
-        user_id: user.id,
-        content: thought.trim(),
-        sentiment,
-      });
+      const { data: savedThought, error } = await supabase.from("thoughts")
+        .insert({
+          user_id: user.id,
+          content: thought.trim(),
+          sentiment,
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Extract memory entities in the background (don't wait for it)
+      if (savedThought) {
+        supabase.functions.invoke('extract-memory', {
+          body: {
+            thoughtId: savedThought.id,
+            content: thought.trim(),
+            sentiment,
+            userId: user.id,
+          }
+        }).catch(error => {
+          console.error('Memory extraction error:', error);
+          // Don't show error to user - this is background processing
+        });
+      }
 
       // 4) UI feedback
       if (crisisDetected) {
