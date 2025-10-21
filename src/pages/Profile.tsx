@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Upload, User, Trash2, Key } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -47,6 +48,9 @@ const Profile = () => {
   const [selectedImageryTheme, setSelectedImageryTheme] = useState(imageryThemes[0]);
   const [isUploading, setIsUploading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -218,19 +222,49 @@ const Profile = () => {
     }
   };
 
-  const handleResetPassword = async () => {
-    if (!user?.email) return;
+  const handleChangePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Please fill in both password fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsChangingPassword(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: `${window.location.origin}/auth`,
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
       });
 
       if (error) throw error;
 
+      setNewPassword("");
+      setConfirmPassword("");
+
       toast({
-        title: "Password reset email sent",
-        description: "Check your email for a link to reset your password.",
+        title: "Password updated",
+        description: "Your password has been changed successfully.",
       });
     } catch (error: any) {
       toast({
@@ -238,6 +272,8 @@ const Profile = () => {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -379,13 +415,47 @@ const Profile = () => {
           {/* User Cleanup (Admin) */}
           {isAdmin && <CleanupUsers />}
 
+          {/* Change Password */}
+          <Card className="p-6">
+            <h3 className="text-xl font-semibold mb-4">Change Password</h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  disabled={isChangingPassword}
+                />
+              </div>
+              <div>
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  disabled={isChangingPassword}
+                />
+              </div>
+              <Button 
+                onClick={handleChangePassword} 
+                className="w-full" 
+                size="lg"
+                disabled={isChangingPassword}
+              >
+                <Key className="w-4 h-4 mr-2" />
+                {isChangingPassword ? "Updating..." : "Update Password"}
+              </Button>
+            </div>
+          </Card>
+
           {/* Account Actions */}
           <Card className="p-6">
             <div className="space-y-3">
-              <Button onClick={handleResetPassword} variant="outline" className="w-full" size="lg">
-                <Key className="w-4 h-4 mr-2" />
-                Reset Password
-              </Button>
               <Button onClick={handleLogout} variant="destructive" className="w-full" size="lg">
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
