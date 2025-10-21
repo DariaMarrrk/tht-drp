@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Upload, User, Trash2 } from "lucide-react";
+import { LogOut, Upload, User, Trash2, Key } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -218,6 +218,29 @@ const Profile = () => {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!user?.email) return;
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password reset email sent",
+        description: "Check your email for a link to reset your password.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleDeleteAccount = async () => {
     if (!user) return;
 
@@ -356,9 +379,13 @@ const Profile = () => {
           {/* User Cleanup (Admin) */}
           {isAdmin && <CleanupUsers />}
 
-          {/* Sign Out */}
+          {/* Account Actions */}
           <Card className="p-6">
             <div className="space-y-3">
+              <Button onClick={handleResetPassword} variant="outline" className="w-full" size="lg">
+                <Key className="w-4 h-4 mr-2" />
+                Reset Password
+              </Button>
               <Button onClick={handleLogout} variant="destructive" className="w-full" size="lg">
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
