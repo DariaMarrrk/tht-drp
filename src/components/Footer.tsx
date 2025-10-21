@@ -10,8 +10,9 @@ export const Footer = () => {
               src={logo}
               alt="Etheri Logo"
               className="w-8 h-8 object-contain"
+              style={{ filter: 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(240deg) brightness(118%) contrast(119%)' }}
             />
-            <span className="font-bold text-xl">Etheri</span>
+            <span className="font-cursive font-bold text-xl">Etheri</span>
           </div>
 
           <p className="text-sm text-muted-foreground">© 2025 Etheri. All rights reserved.</p>
