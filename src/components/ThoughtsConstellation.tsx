@@ -248,9 +248,9 @@ export const ThoughtsConstellation = () => {
 
       // Group thoughts by sentiment with clear spatial separation
       const sentimentPositions = {
-        positive: { baseX: 150, baseY: 250, maxRadius: 100 },
-        neutral: { baseX: 450, baseY: 250, maxRadius: 100 },
-        negative: { baseX: 750, baseY: 250, maxRadius: 100 },
+        positive: { baseX: 120, baseY: 250, maxRadius: 90 },
+        neutral: { baseX: 450, baseY: 250, maxRadius: 90 },
+        negative: { baseX: 780, baseY: 250, maxRadius: 90 },
       };
 
       // Transform thoughts with improved clustering and collision avoidance
