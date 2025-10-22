@@ -246,18 +246,151 @@ export const ThoughtsConstellation = () => {
         } as typeof thought & { keywords: Set<string>; sentiment: "positive"|"neutral"|"negative" };
       });
 
-      // Group thoughts by sentiment with clear spatial separation
-      const sentimentPositions = {
-        positive: { baseX: 120, baseY: 250, maxRadius: 90 },
-        neutral: { baseX: 450, baseY: 250, maxRadius: 90 },
-        negative: { baseX: 780, baseY: 250, maxRadius: 90 },
+      // Define non-overlapping column bounds per sentiment to guarantee separation
+      const groupBounds = {
+        positive: { xMin: 40,  xMax: 280, yMin: 80,  yMax: 520, centerX: 160, centerY: 300 },
+        neutral:  { xMin: 310, xMax: 590, yMin: 80,  yMax: 520, centerX: 450, centerY: 300 },
+        negative: { xMin: 620, xMax: 860, yMin: 80,  yMax: 520, centerX: 740, centerY: 300 },
+      } as const;
+
+      // Transform thoughts with robust, deterministic placement and collision resolution
+      const positionedThoughts: Thought[] = [];
+
+      // Seeded RNG for deterministic layout across builds
+      const hashString = (str: string) => {
+        let h = 2166136261 >>> 0;
+        for (let i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      };
+      const mulberry32 = (a: number) => () => {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
       };
 
-      // Transform thoughts with improved clustering and collision avoidance
-      const positionedThoughts: Thought[] = [];
-      
-      // Helper function to check if two circles overlap
-      const checkCollision = (x1: number, y1: number, r1: number, x2: number, y2: number, r2: number): boolean => {
+      // Distance helper with buffer
+      const buffer = 18; // slightly larger than before to ensure spacing
+      const circleClearance = (x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) => {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        return Math.sqrt(dx * dx + dy * dy) - (r1 + r2 + buffer);
+      };
+
+      // Best-candidate sampling inside rectangular bounds
+      const bestCandidateInBounds = (
+        bounds: { xMin: number; xMax: number; yMin: number; yMax: number },
+        radius: number,
+        placed: Thought[],
+        rng: () => number
+      ) => {
+        let best: { x: number; y: number } | null = null;
+        let bestScore = -Infinity;
+        const tries = 250;
+        for (let i = 0; i < tries; i++) {
+          const x = bounds.xMin + radius + (bounds.xMax - bounds.xMin - 2 * radius) * rng();
+          const y = bounds.yMin + radius + (bounds.yMax - bounds.yMin - 2 * radius) * rng();
+
+          let minClear = Infinity;
+          for (const p of placed) {
+            const c = circleClearance(x, y, radius, p.x, p.y, p.size / 2);
+            if (c < minClear) minClear = c;
+          }
+          if (placed.length === 0) minClear = 9999;
+
+          if (minClear > bestScore) {
+            bestScore = minClear;
+            best = { x, y };
+          }
+          if (minClear >= 0) return { x, y };
+        }
+        // May still return best (might be slightly overlapping; we'll resolve via relaxation)
+        return best ?? { x: (bounds.xMin + bounds.xMax) / 2, y: (bounds.yMin + bounds.yMax) / 2 };
+      };
+
+      // Resolve any residual overlaps using a simple relaxation within bounds
+      const resolveOverlapsInBounds = (
+        items: Thought[],
+        bounds: { xMin: number; xMax: number; yMin: number; yMax: number }
+      ) => {
+        const iterations = 120;
+        for (let k = 0; k < iterations; k++) {
+          let moved = false;
+          for (let i = 0; i < items.length; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+              const a = items[i];
+              const b = items[j];
+              const dx = b.x - a.x;
+              const dy = b.y - a.y;
+              let dist = Math.hypot(dx, dy) || 0.0001;
+              const required = a.size / 2 + b.size / 2 + buffer;
+              const overlap = required - dist;
+              if (overlap > 0) {
+                const ux = dx / dist;
+                const uy = dy / dist;
+                const push = overlap / 2 + 0.5;
+                a.x -= ux * push; a.y -= uy * push;
+                b.x += ux * push; b.y += uy * push;
+                moved = true;
+              }
+            }
+            // Clamp to bounds after each inner loop
+            const ar = items[i].size / 2;
+            items[i].x = Math.min(bounds.xMax - ar, Math.max(bounds.xMin + ar, items[i].x));
+            items[i].y = Math.min(bounds.yMax - ar, Math.max(bounds.yMin + ar, items[i].y));
+          }
+          if (!moved) break;
+        }
+      };
+
+      // Place per-group in distinct columns
+      const sentiments: ("positive"|"neutral"|"negative")[] = ["positive", "neutral", "negative"];
+
+      sentiments.forEach((sent) => {
+        const bounds = groupBounds[sent];
+        const groupPlaced: Thought[] = [];
+        
+        thoughtsWithKeywords
+          .filter(t => t.sentiment === sent)
+          // Place larger circles first for better packing
+          .sort((a, b) => b.content.length - a.content.length)
+          .forEach((thought) => {
+            const contentLength = thought.content.length;
+            const exclaimCount = (thought.content.match(/[!?]/g) || []).length;
+            const lenScore = Math.sqrt(Math.min(contentLength, 500)) * 6;
+            const emphScore = Math.min(exclaimCount * 8, 24);
+            const size = Math.max(Math.min(24 + lenScore + emphScore, 100), 24);
+            const radius = size / 2;
+
+            // Deterministic RNG per thought
+            const rng = mulberry32(hashString(`${thought.id}:${thought.created_at ?? ''}:${thought.content}`));
+
+            const pos = bestCandidateInBounds(bounds, radius, groupPlaced, rng);
+
+            const placed: Thought = {
+              id: thought.id,
+              content: thought.content,
+              sentiment: sent,
+              created_at: thought.created_at,
+              x: pos.x,
+              y: pos.y,
+              size,
+            };
+            groupPlaced.push(placed);
+          });
+
+        // Final relaxation to absolutely remove overlaps
+        resolveOverlapsInBounds(groupPlaced, bounds);
+
+        // Append to master list
+        positionedThoughts.push(...groupPlaced);
+      });
+
+      setThoughts(positionedThoughts);
+
         const dx = x2 - x1;
         const dy = y2 - y1;
         const distance = Math.sqrt(dx * dx + dy * dy);
