@@ -261,7 +261,7 @@ export const ThoughtsConstellation = () => {
         const dx = x2 - x1;
         const dy = y2 - y1;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const minDistance = r1 + r2 + 5; // Add 5px buffer between circles
+        const minDistance = r1 + r2 + 15; // Add 15px buffer between circles
         return distance < minDistance;
       };
 
@@ -274,7 +274,7 @@ export const ThoughtsConstellation = () => {
         referenceY?: number,
         maxDistance?: number
       ): { x: number; y: number } => {
-        const maxAttempts = 50;
+        const maxAttempts = 150;
         
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
           let testX: number, testY: number;
@@ -294,8 +294,8 @@ export const ThoughtsConstellation = () => {
           }
           
           // Clamp to viewBox bounds
-          testX = Math.max(radius, Math.min(900 - radius, testX));
-          testY = Math.max(radius, Math.min(600 - radius, testY));
+          testX = Math.max(radius + 5, Math.min(900 - radius - 5, testX));
+          testY = Math.max(radius + 5, Math.min(600 - radius - 5, testY));
           
           // Check for collisions with existing circles
           let hasCollision = false;
@@ -311,9 +311,29 @@ export const ThoughtsConstellation = () => {
           }
         }
         
-        // Fallback: return clamped position even if there's overlap
-        const testX = Math.max(radius, Math.min(900 - radius, baseX));
-        const testY = Math.max(radius, Math.min(600 - radius, baseY));
+        // Fallback: Try a spiral search pattern from base position
+        for (let spiralRadius = 20; spiralRadius < 200; spiralRadius += 20) {
+          for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 8) {
+            const testX = Math.max(radius + 5, Math.min(900 - radius - 5, baseX + Math.cos(angle) * spiralRadius));
+            const testY = Math.max(radius + 5, Math.min(600 - radius - 5, baseY + Math.sin(angle) * spiralRadius));
+            
+            let hasCollision = false;
+            for (const existing of positionedThoughts) {
+              if (checkCollision(testX, testY, radius, existing.x, existing.y, existing.size / 2)) {
+                hasCollision = true;
+                break;
+              }
+            }
+            
+            if (!hasCollision) {
+              return { x: testX, y: testY };
+            }
+          }
+        }
+        
+        // Final fallback: return base position (should rarely happen now)
+        const testX = Math.max(radius + 5, Math.min(900 - radius - 5, baseX));
+        const testY = Math.max(radius + 5, Math.min(600 - radius - 5, baseY));
         return { x: testX, y: testY };
       };
       
