@@ -75,6 +75,8 @@ export const ThoughtsConstellation = () => {
   const { toast } = useToast();
   const { imageryTheme } = useUserTheme();
   const containerRef = useRef<HTMLDivElement>(null);
+  // Dynamic SVG viewBox dimensions synced to actual container size
+  const [vb, setVb] = useState({ w: 900, h: 600 });
 
   const handleGetSuggestions = async () => {
     if (thoughts.length === 0) {
@@ -160,7 +162,7 @@ export const ThoughtsConstellation = () => {
     if (user) {
       loadThoughts();
     }
-  }, [user, weekOffset]);
+  }, [user, weekOffset, vb.w, vb.h]);
 
   const loadThoughts = async () => {
     try {
@@ -246,11 +248,17 @@ export const ThoughtsConstellation = () => {
         } as typeof thought & { keywords: Set<string>; sentiment: "positive"|"neutral"|"negative" };
       });
 
-      // Define non-overlapping column bounds per sentiment to guarantee separation
+      // Define non-overlapping column bounds per sentiment based on current viewBox (responsive)
+      const marginX = Math.max(32, vb.w * 0.05);
+      const marginY = Math.max(40, vb.h * 0.08);
+      const innerW = Math.max(150, vb.w - marginX * 2);
+      const colW = innerW / 3;
+      const yMin = marginY;
+      const yMax = vb.h - marginY;
       const groupBounds = {
-        positive: { xMin: 40,  xMax: 280, yMin: 80,  yMax: 520, centerX: 160, centerY: 300 },
-        neutral:  { xMin: 310, xMax: 590, yMin: 80,  yMax: 520, centerX: 450, centerY: 300 },
-        negative: { xMin: 620, xMax: 860, yMin: 80,  yMax: 520, centerX: 740, centerY: 300 },
+        positive: { xMin: marginX + 0 * colW + 8, xMax: marginX + 1 * colW - 8, yMin, yMax, centerX: marginX + colW * 0.5, centerY: (yMin + yMax) / 2 },
+        neutral:  { xMin: marginX + 1 * colW + 8, xMax: marginX + 2 * colW - 8, yMin, yMax, centerX: marginX + colW * 1.5, centerY: (yMin + yMax) / 2 },
+        negative: { xMin: marginX + 2 * colW + 8, xMax: marginX + 3 * colW - 8, yMin, yMax, centerX: marginX + colW * 2.5, centerY: (yMin + yMax) / 2 },
       } as const;
 
       // Transform thoughts with robust, deterministic placement and collision resolution
@@ -573,7 +581,7 @@ export const ThoughtsConstellation = () => {
             <svg
               width="100%"
               height="100%"
-              viewBox="0 0 900 600"
+              viewBox={`0 0 ${vb.w} ${vb.h}`}
               preserveAspectRatio="xMidYMid meet"
             >
               {/* Connection lines */}
@@ -662,8 +670,8 @@ export const ThoughtsConstellation = () => {
               const ch = container?.clientHeight ?? 0;
 
               // SVG viewBox size
-              const vbW = 900;
-              const vbH = 600;
+              const vbW = vb.w;
+              const vbH = vb.h;
 
               // Compute uniform scale and letterbox offsets used by preserveAspectRatio="xMidYMid meet"
               const scale = Math.min(cw / vbW, ch / vbH) || 0;
