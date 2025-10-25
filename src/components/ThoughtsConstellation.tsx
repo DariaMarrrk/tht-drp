@@ -797,7 +797,7 @@ export const ThoughtsConstellation = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {suggestions.suggestions.map((suggestion, index) => {
                   const getActivityIcon = (type: string) => {
                     switch (type.toLowerCase()) {
@@ -829,24 +829,24 @@ export const ThoughtsConstellation = () => {
                     <Card
                       key={index}
                       onClick={() => isCrisisCard && setShowCrisisDialog(true)}
-                      className={`p-6 bg-card/95 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group hover:-translate-y-1 ${
+                      className={`p-8 bg-card/95 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group hover:-translate-y-1 ${
                         isCrisisCard ? 'cursor-pointer' : ''
                       }`}
                     >
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                      <div className="flex items-start gap-5 mb-6">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                           {getActivityIcon(suggestion.type)}
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-xl font-bold mb-1 text-foreground">
+                          <h4 className="text-2xl font-bold mb-2 text-foreground">
                             {suggestion.title}
                           </h4>
-                          <p className="text-sm text-muted-foreground italic">
+                          <p className="text-base text-muted-foreground italic">
                             {suggestion.why}
                           </p>
                         </div>
                       </div>
-                      <p className="text-sm text-foreground/80 leading-relaxed mb-4">
+                      <p className="text-base text-foreground/80 leading-relaxed mb-4">
                         {suggestion.description}
                       </p>
                       <div className="flex items-center justify-between">

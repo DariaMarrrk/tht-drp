@@ -108,18 +108,22 @@ IMPORTANT: Use this context to:
 - Consider places they frequent or have mentioned positively
 ` : 'Note: No historical context available yet for this user.'}
 
-Analyze the user's thoughts from their week and suggest 1-15 personalized weekend activities that will help them recharge based on their emotional state and experiences.
+Analyze the user's thoughts from their week and suggest personalized weekend activities that will help them recharge based on their emotional state and experiences.
 
-IMPORTANT: The number of suggestions should match the complexity and variety of their week:
-- Simple week with few thoughts: 1-5 suggestions
-- Moderate week with varied experiences: 5-10 suggestions
-- Complex week with many themes: 10-15 suggestions
+IMPORTANT: Provide EXACTLY ONE suggestion for each relevant category below. Only include categories that make sense based on their week - don't force suggestions where they don't fit naturally:
+- relaxation: For rest, recovery, unwinding
+- social: For connection, relationships, community
+- creative: For self-expression, hobbies, creative outlets
+- physical: For movement, exercise, outdoor activities
+- mindful: For reflection, meditation, mental wellness
+- adventure: For trying new things, exploration
+- reminder: For specific tasks/goals they mentioned wanting to do
 
 For each suggestion, provide:
 1. A catchy title (max 50 chars)
-2. A brief WHY explanation (max 80 chars) - why this suits their week
-3. A detailed WHAT description (max 200 chars) - specific actionable steps or details about what they should do, tailored to their experiences
-4. An activity type (one of: relaxation, social, creative, physical, mindful, adventure, reminder)
+2. A brief WHY explanation (max 100 chars) - why this suits their week
+3. A detailed WHAT description (max 250 chars) - specific actionable steps or details about what they should do, tailored to their experiences
+4. An activity type (one of the categories above)
 
 CRITICAL - REMINDER CATEGORY: If the user mentioned specific tasks, goals, or things they need to do that haven't been mentioned as completed or cancelled, include them as "reminder" type suggestions. For example:
 - "Need to call mom" → reminder to call mom
