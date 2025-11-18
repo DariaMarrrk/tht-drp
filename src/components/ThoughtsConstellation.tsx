@@ -820,18 +820,10 @@ export const ThoughtsConstellation = () => {
                     }
                   };
 
-                  // Check if this is a crisis-related support card
-                  const isCrisisCard = /support|crisis|reach out|hotline|help|professional/i.test(
-                    suggestion.title + ' ' + suggestion.description
-                  );
-
                   return (
                     <Card
                       key={index}
-                      onClick={() => isCrisisCard && setShowCrisisDialog(true)}
-                      className={`p-8 bg-card/95 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group hover:-translate-y-1 ${
-                        isCrisisCard ? 'cursor-pointer' : ''
-                      }`}
+                      className="p-8 bg-card/95 backdrop-blur-sm border-2 border-primary/30 hover:border-primary/60 transition-all duration-300 hover:shadow-glow group hover:-translate-y-1"
                     >
                       <div className="flex items-start gap-5 mb-6">
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
