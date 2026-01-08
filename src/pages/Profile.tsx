@@ -19,6 +19,7 @@ import themeCoralReef from "@/assets/theme-coral-reef.jpg";
 import themeCosyLibrary from "@/assets/theme-cosy-library.jpg";
 import themeStarryNight from "@/assets/theme-starry-night.jpg";
 import themeVillageSunrise from "@/assets/theme-village-sunrise.jpg";
+import themeSnowyWinter from "@/assets/theme-snowy-winter.jpg";
 
 const themes = [
   { name: "Purple Dream", colors: { primary: "270 65% 55%", secondary: "200 80% 65%", accent: "310 75% 70%" } },
@@ -39,6 +40,7 @@ const imageryThemes = [
   { name: "Cosy Library", description: "Literary comfort", image: themeCosyLibrary },
   { name: "Starry Night", description: "Celestial dreams", image: themeStarryNight },
   { name: "Village Sunrise", description: "Morning hope", image: themeVillageSunrise },
+  { name: "Snowy Winter", description: "Frosty tranquility", image: themeSnowyWinter },
 ];
 
 const Profile = () => {
