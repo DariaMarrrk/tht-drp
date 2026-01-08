@@ -112,6 +112,10 @@ export const Hero = () => {
         return "radial-gradient(ellipse at 30% 40%, hsl(100 40% 60% / 0.1) 0%, transparent 60%), radial-gradient(ellipse at 70% 60%, hsl(340 50% 70% / 0.1) 0%, transparent 60%)";
       case "campfire":
         return "radial-gradient(ellipse at 50% 70%, hsl(30 80% 50% / 0.15) 0%, transparent 60%)";
+      case "snowy winter":
+        return "radial-gradient(circle at 30% 20%, hsl(200 30% 90% / 0.2) 0%, transparent 50%), radial-gradient(circle at 70% 80%, hsl(210 40% 85% / 0.15) 0%, transparent 50%)";
+      case "rainy day":
+        return "linear-gradient(180deg, hsl(220 20% 40% / 0.15) 0%, hsl(200 30% 50% / 0.1) 100%)";
       default:
         return "radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.15) 0%, transparent 50%)";
     }
