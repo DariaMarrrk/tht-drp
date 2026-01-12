@@ -18,6 +18,7 @@ import themeStarryNight from "@/assets/theme-starry-night.jpg";
 import themeVillageSunrise from "@/assets/theme-village-sunrise.jpg";
 import themeSnowyWinter from "@/assets/theme-snowy-winter.jpg";
 import themeRainyDay from "@/assets/theme-rainy-day.jpg";
+import themeForestLake from "@/assets/theme-forest-lake.jpg";
 
 interface Thought {
   id: string;
@@ -508,6 +509,8 @@ export const ThoughtsConstellation = () => {
         return themeSnowyWinter;
       case "rainy day":
         return themeRainyDay;
+      case "forest lake":
+        return themeForestLake;
       default:
         return themeSpace;
     }
